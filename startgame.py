@@ -73,9 +73,6 @@ def start():
 def fight(character, mob):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
-    # for k, v in character['stats'].items():
-    #     if v > higheststatvalue:
-    #         higheststatvalue = v
 
     if character['type'] == 'mage':
         damagestat = character['stats']['intelligence']
