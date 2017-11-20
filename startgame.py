@@ -50,7 +50,8 @@ def start():
 
     env = Environments(level=character['level'])
     environment = env.dungeon()
-    announce("You've entered a {env}! You sense {enemycount} enemies!".format(env=environment['name'], enemycount=len(environment['mobs'])))
+    announce("You've entered a {env}! You sense {enemycount} enemies!".format(env=environment['name'],
+                                                                              enemycount=len(environment['mobs'])))
 
     shuffle(environment['mobs'])
     for mob in environment['mobs']:
