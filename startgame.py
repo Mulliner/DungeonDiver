@@ -87,15 +87,18 @@ def fight(character, mob):
     if character['type'] == 'cleric':
         damagestat = character['stats']['piety']
 
-    print(damagestat)
+
     while mob['health'] > 0:
         announce('\nWhat action will you do? (basic or ability)')
-        action = input('>>> ')
+        whoattacks = randint(0, 1)
+        action = prompt_fight_action()
 
         if action.lower() == 'basic':
             damage = randint(0, int(damagestat / 2))
+        else:
+            announce(Back.CYAN + 'Action not available, you forfeit your turn.')
+            whoattacks = 1
 
-        whoattacks = randint(0, 1)
         if whoattacks == 0:
             if damage != 0:
                 announce(Fore.YELLOW + "{name} attacks {mobname} for {damage} damage!".format(mobname=mob['name'],
@@ -112,15 +115,17 @@ def fight(character, mob):
             else:
                 announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
 
-        announce('{charname} health remaining: {charhealth}({maxhealth}) | {mobname} health remaining: {mobhealth}'
+        announce('{charname} health remaining: {charhealth} | {mobname} health remaining: {mobhealth}'
             .format(charname=character['name'], charhealth=character['stats']['health'],
-                    maxhealth=character['stats']['vitality'], mobname=mob['name'], mobhealth=mob['health']))
+                    mobname=mob['name'], mobhealth=mob['health']))
 
         if mob['health'] <= 0:
             announce('{mobname} has died!\n\n'.format(mobname=mob['name']) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
-            announce('{name} has gained {exp} experience'.format(name=character['name'], exp=mobexperiencevalue))
+            announce('{name} has gained {earnedexp} experience | '\
+                     'Total exp: {exp}'.format(name=character['name'], earnedexp=mobexperiencevalue,
+                                               exp=character['experience']))
 
         if character['experience'] >= character['level'] * 10:
             level(character)
@@ -128,6 +133,9 @@ def fight(character, mob):
         if character['stats']['health'] <= 0:
             announce('Game Over!')
             start()
+
+def prompt_fight_action():
+    return input('>>> ')
 
 
 def level(character):
@@ -141,8 +149,7 @@ def level(character):
         announce('\t{stat}: {value}'.format(stat=k, value=v))
 
 def heal(character):
-    if character['stats']['health'] < math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality'])
-    - 3:
+    if character['stats']['health'] < math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality']) - 3:
         healamount = randint(1, 3)
         character['stats']['health'] += healamount
         announce(Fore.GREEN + '{name} has been healed for {amount} ({currenthealth})'.format(name=character['name'],
