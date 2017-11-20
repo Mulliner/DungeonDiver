@@ -120,7 +120,8 @@ def fight(character, mob):
 
         if mob['health'] <= 0:
             os.system('cls')
-            announce('{mobname} has died!\n''{mobamount} remaining.\n'.format(mobname=mob['name'], mobamount=environment['mobs']) + '^' * 80)
+            announce('{mobname} has died!\n''{mobamount} remaining.\n'.format(mobname=mob['name'],
+            mobamount=environment['mobs']) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
             announce('{name} has gained {earnedexp} experience | '\
