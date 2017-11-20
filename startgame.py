@@ -73,19 +73,24 @@ def start():
 def fight(character, mob):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
+<<<<<<< HEAD
+=======
+
+>>>>>>> bfa4b8664c6509a761d797fa132f990681de6d74
     if character['type'] == 'mage':
         damagestat = character['stats']['intelligence']
     if character['type'] == 'warrior':
-        damagestat = character['stats']['intelligence']
+        damagestat = round((character['stats']['vitality'] + character['stats']['strength']) * .65)
     if character['type'] == 'fighter':
-        damagestat = character['stats']['intelligence']
+        damagestat = character['stats']['strength']
     if character['type'] == 'ranger':
-        damagestat = character['stats']['intelligence']
+        damagestat = character['stats']['dexterity']
     if character['type'] == 'paladin':
-        damagestat = character['stats']['intelligence']
+        damagestat = round((character['stats']['vitality'] + character['stats']['piety']) * .65)
     if character['type'] == 'cleric':
-        damagestat = character['stats']['intelligence']
+        damagestat = character['stats']['piety']
 
+    print(damagestat)
     while mob['health'] > 0:
         announce('\nWhat action will you do? (basic or ability)')
         action = input('>>> ')
