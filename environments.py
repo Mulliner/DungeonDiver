@@ -11,9 +11,12 @@ class Environments:
         mobs = list()
         boss = self.enemies.ogre()
 
-        for i in range(2, 8):
+        skeletoncount = random.randint(2, 9)
+        batcount = random.randint(5, 18)
+
+        for i in range(skeletoncount):
             mobs.append(self.enemies.skeleton())
-        for i in range(5, 17):
+        for i in range(batcount):
             mobs.append(self.enemies.bat())
 
         objtoreturn = {

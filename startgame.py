@@ -39,7 +39,7 @@ def start():
 
     announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
     character['name'] = input('>>> ')
-    character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
+    character['stats']['health'] = math.floor(character['stats']['vitality'] * .90)
     character['experience'] = 0
     character['level'] = 1
     character['type'] = classtoplay.lower()
@@ -50,27 +50,28 @@ def start():
 
     env = Environments(level=character['level'])
     environment = env.dungeon()
-    announce("You've entered a {env}! Clear out all of the enemies!".format(env=environment['name']))
+    announce("You've entered a {env}! You sense {enemycount} enemies!".format(env=environment['name'], enemycount=len(environment['mobs'])))
 
     shuffle(environment['mobs'])
     for mob in environment['mobs']:
         announce('Uh-oh! {mobname} attacks!'.format(mobname=mob['name']))
-        if mob['name'] == 'Bat':
-            with open('art/bat.txt', mode='r') as f:
-                print(f.read())
-        elif mob['name'] == 'Skeleton':
-            with open('art/skeleton.txt', mode='r') as f:
-                print(f.read())
         fight(character, mob, environment, environment['mobs'].index(mob))
 
     announce("\nYou've cleared out all of the enemies, now its time for the boss!")
     if environment['boss']['name'] == 'Ogre':
         with open('art/ogre.txt', mode='r') as f:
             print(f.read())
-    fight(character, environment['boss'], environment, environment['mobs'].index(mob))
+    fight(character, environment['boss'])
 
 
-def fight(character, mob, environment, mobindex):
+def fight(character, mob, environment=None, mobindex=None):
+    if mob['name'] == 'Bat':
+        with open('art/bat.txt', mode='r') as f:
+            print(f.read())
+    elif mob['name'] == 'Skeleton':
+        with open('art/skeleton.txt', mode='r') as f:
+            print(f.read())
+
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
     if character['type'] == 'mage':
@@ -120,9 +121,7 @@ def fight(character, mob, environment, mobindex):
 
         if mob['health'] <= 0:
             os.system('cls')
-            environment['mobs'].pop(mobindex)
-            announce('{mobname} has died! | {mobamount} enemies remaining.\n'.format(mobname=mob['name'],
-            mobamount=len(environment['mobs'])) + '^' * 80)
+            announce('{mobname} has died!\n'.format(mobname=mob['name']) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
             announce('{name} has gained {earnedexp} experience | '\
