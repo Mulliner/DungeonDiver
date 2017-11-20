@@ -74,17 +74,17 @@ def fight(character, mob):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
     if character['type'] == 'mage':
-        damagestat = character['stats']['intelligence']
+        damagestat = round(character['stats']['intelligence'] * 1.4)
     if character['type'] == 'warrior':
-        damagestat = round((character['stats']['vitality'] + character['stats']['strength']) * .65)
+        damagestat = round((character['stats']['vitality'] + character['stats']['strength']) * .75)
     if character['type'] == 'fighter':
-        damagestat = character['stats']['strength']
+        damagestat = round(character['stats']['strength'] * 1.2)
     if character['type'] == 'ranger':
-        damagestat = character['stats']['dexterity']
+        damagestat = round(character['stats']['dexterity'] * 1.3)
     if character['type'] == 'paladin':
         damagestat = round((character['stats']['vitality'] + character['stats']['piety']) * .65)
     if character['type'] == 'cleric':
-        damagestat = character['stats']['piety']
+        damagestat = round(character['stats']['piety'] * .9)
 
 
     while mob['health'] > 0:
@@ -120,7 +120,7 @@ def fight(character, mob):
 
         if mob['health'] <= 0:
             os.system('cls')
-            announce('{mobname} has died!\n\n'.format(mobname=mob['name']) + '^' * 80)
+            announce('{mobname} has died!\n''{mobamount} remaining.\n'.format(mobname=mob['name'], mobamount=environment['mobs']) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
             announce('{name} has gained {earnedexp} experience | '\
