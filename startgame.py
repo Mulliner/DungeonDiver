@@ -73,10 +73,6 @@ def start():
 def fight(character, mob):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
-<<<<<<< HEAD
-=======
-
->>>>>>> bfa4b8664c6509a761d797fa132f990681de6d74
     if character['type'] == 'mage':
         damagestat = character['stats']['intelligence']
     if character['type'] == 'warrior':
