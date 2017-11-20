@@ -73,10 +73,7 @@ def start():
 def fight(character, mob):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
-    # for k, v in character['stats'].items():
-    #     if v > higheststatvalue:
-    #         higheststatvalue = v
-
+    
     if character['type'] == 'mage':
         damagestat = character['stats']['intelligence']
     if character['type'] == 'warrior':
@@ -95,7 +92,7 @@ def fight(character, mob):
         action = input('>>> ')
 
         if action.lower() == 'basic':
-            damage = randint(0, int(higheststatvalue / 2))
+            damage = randint(0, int(damagestat / 2))
 
         whoattacks = randint(0, 1)
         if whoattacks == 0:
