@@ -61,16 +61,16 @@ def start():
         elif mob['name'] == 'Skeleton':
             with open('art/skeleton.txt', mode='r') as f:
                 print(f.read())
-        fight(character, mob)
+        fight(character, mob, environment, environment['mobs'].index(mob))
 
     announce("\nYou've cleared out all of the enemies, now its time for the boss!")
     if environment['boss']['name'] == 'Ogre':
         with open('art/ogre.txt', mode='r') as f:
             print(f.read())
-    fight(character, environment['boss'])
+    fight(character, environment['boss'], environment, environment['mobs'].index(mob))
 
 
-def fight(character, mob):
+def fight(character, mob, environment, mobindex):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
     if character['type'] == 'mage':
@@ -120,8 +120,9 @@ def fight(character, mob):
 
         if mob['health'] <= 0:
             os.system('cls')
-            announce('{mobname} has died!\n''{mobamount} remaining.\n'.format(mobname=mob['name'],
-            mobamount=environment['mobs']) + '^' * 80)
+            environment['mobs'].pop(mobindex)
+            announce('{mobname} has died! | {mobamount} enemies remaining.\n'.format(mobname=mob['name'],
+            mobamount=len(environment['mobs'])) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
             announce('{name} has gained {earnedexp} experience | '\
@@ -181,6 +182,7 @@ def level(character):
     announce('Here are your new stats, {name}..\n'.format(name=character['name']))
     for k, v in character['stats'].items():
         announce('\t{stat}: {value}'.format(stat=k, value=v))
+
 
 def heal(character):
     if character['stats']['health'] < math.floor(character['stats']['vitality'] * .85) - 3:
