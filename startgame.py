@@ -73,7 +73,6 @@ def start():
 def fight(character, mob):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
-    
     if character['type'] == 'mage':
         damagestat = character['stats']['intelligence']
     if character['type'] == 'warrior':
@@ -140,8 +139,7 @@ def level(character):
         announce('\t{stat}: {value}'.format(stat=k, value=v))
 
 def heal(character):
-    if character['stats']['health'] < math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality'])
-    - 3:
+    if character['stats']['health'] < math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality']) - 3:
         healamount = randint(1, 3)
         character['stats']['health'] += healamount
         announce(Fore.GREEN + '{name} has been healed for {amount} ({currenthealth})'.format(name=character['name'],
