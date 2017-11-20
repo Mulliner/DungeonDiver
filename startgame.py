@@ -95,7 +95,7 @@ def fight(character, mob):
         action = input('>>> ')
 
         if action.lower() == 'basic':
-            damage = randint(0, int(higheststatvalue / 2))
+            damage = randint(0, int(damagestat / 2))
 
         whoattacks = randint(0, 1)
         if whoattacks == 0:
