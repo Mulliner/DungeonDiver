@@ -5,11 +5,11 @@ class Character:
 
     def mage(self):
         stats = {
+            'vitality': 6,
             'strength': 3,
             'dexterity': 4,
             'intelligence': 10,
             'piety': 2
-            'vitality': 6,
         }
         return stats
 
