@@ -4,13 +4,11 @@ class Character:
         pass
 
     def mage(self):
-        combatstats = {
+        stats = {
             'strength': 3,
             'dexterity': 4,
             'intelligence': 10,
             'piety': 2
-        }
-        noncombatstats = {
             'vitality': 6,
         }
         return stats
