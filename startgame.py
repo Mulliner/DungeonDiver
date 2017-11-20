@@ -141,7 +141,6 @@ def level(character):
     announce('!' * 40 + ' LEVEL UP ' + '!' * 40)
     character['experience'] = 0
     character['level'] += 1
-    character['stats']['vitality'] += 5
     character['stats']['health'] = math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality'])
     announce('Here are your new stats, {name}..\n'.format(name=character['name']))
     for k, v in character['stats'].items():
