@@ -1,4 +1,5 @@
 import math
+import os
 from random import shuffle
 from random import randint
 from colorama import init
@@ -38,8 +39,7 @@ def start():
 
     announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
     character['name'] = input('>>> ')
-    character['stats']['health'] = math.floor(character['stats']['vitality'] -
-        .15 * character['stats']['vitality'])
+    character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
     character['experience'] = 0
     character['level'] = 1
     character['type'] = classtoplay.lower()
@@ -119,6 +119,7 @@ def fight(character, mob):
                     mobname=mob['name'], mobhealth=mob['health']))
 
         if mob['health'] <= 0:
+            os.system('cls')
             announce('{mobname} has died!\n\n'.format(mobname=mob['name']) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
@@ -139,15 +140,52 @@ def prompt_fight_action():
 
 def level(character):
     announce('!' * 40 + ' LEVEL UP ' + '!' * 40)
+    points = 3
+    attributes = ['vitality', 'intelligence', 'strength', 'dexterity', 'piety']
+
+    while points > 0:
+        announce('You have {points} points to spend!'.format(points=points))
+        announce('Where would you like them to go? Enter in format "Amount:Attribute"')
+        wheretospend = input('>>> ').split(':')
+        try:
+            if int(wheretospend[0]) > points or int(wheretospend[0]) <= 0:
+                continue
+            elif len(wheretospend) != 2:
+                continue
+            elif wheretospend[1].lower() not in attributes:
+                continue
+            else:
+                points -= int(wheretospend[0])
+        except ValueError:
+            continue
+
+        amount = int(wheretospend[0])
+        attribute = wheretospend[1].lower()
+
+        if attribute == 'vitality':
+            character['stats']['vitality'] += amount
+        elif attribute == 'intelligence':
+            character['stats']['intelligence'] += amount
+        elif attribute == 'strength':
+            character['stats']['strength'] += amount
+        elif attribute == 'dexterity':
+            character['stats']['dexterity'] += amount
+        elif attribute == 'piety':
+            character['stats']['piety'] += amount
+
     character['experience'] = 0
     character['level'] += 1
+<<<<<<< HEAD
     character['stats']['health'] = math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality'])
+=======
+    character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
+>>>>>>> 098dc0a404e2703992616be5da7d483ed626cf58
     announce('Here are your new stats, {name}..\n'.format(name=character['name']))
     for k, v in character['stats'].items():
         announce('\t{stat}: {value}'.format(stat=k, value=v))
 
 def heal(character):
-    if character['stats']['health'] < math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality']) - 3:
+    if character['stats']['health'] < math.floor(character['stats']['vitality'] * .85) - 3:
         healamount = randint(1, 3)
         character['stats']['health'] += healamount
         announce(Fore.GREEN + '{name} has been healed for {amount} ({currenthealth})'.format(name=character['name'],
@@ -155,7 +193,7 @@ def heal(character):
 
 
 def announce(annoucement):
-    print('\n\t {annoucement} \n'.format(annoucement=annoucement))
+    print('\n\t {annoucement}'.format(annoucement=annoucement))
 
 
 if '__main__' in __name__:
