@@ -135,6 +135,7 @@ def fight(character, mob):
             announce('Game Over!')
             start()
 
+
 def prompt_fight_action():
     return input('>>> ')
 
