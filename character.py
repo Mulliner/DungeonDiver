@@ -11,7 +11,13 @@ class Character:
             'intelligence': 10,
             'piety': 2
         }
-        return stats
+        abilities = [
+            {
+                'name': 'Fireblast',
+                'damage': stats['intelligence'] * 2,
+            }
+        ]
+        return [stats, abilities]
 
     def warrior(self):
         stats = {

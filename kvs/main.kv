@@ -1,0 +1,80 @@
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+ScreenManagement:
+    transition: FadeTransition()
+    MainScreen:
+    ClassSelectScreen:
+    CharacterNameScreen:
+    CombatScreen:
+
+<MainScreen>:
+    name: 'main'
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            on_release: app.root.current = 'classselect'
+            text: 'Class'
+            font_size: 50
+
+
+<ClassSelectScreen>:
+    name: 'classselect'
+
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            on_release: app.root.current = 'charactername'
+            text: 'Mage'
+            font_size: 50
+            #: classtoplay 'Mage'
+        Button:
+            on_release: app.root.current = 'main'
+            text: 'Warrior'
+            font_size: 50
+
+        Button:
+            on_release: app.root.current = 'main'
+            text: 'Ranger'
+            font_size: 50
+
+        Button:
+            on_release: app.root.current = 'main'
+            text: 'Cleric'
+            font_size: 50
+
+        Button:
+            on_release: app.root.current = 'main'
+            text: 'Fighter'
+            font_size: 50
+
+        Button:
+            on_release: app.root.current = 'main'
+            text: 'Paladin'
+            font_size: 50
+
+
+<CharacterNameScreen>:
+    name: 'charactername'
+
+    BoxLayout:
+        id: characternamecontent
+        orientation: 'horizontal'
+
+        TextInput:
+            id: charactername
+            size_hint: 1, .08
+            multiline: False
+
+        Button:
+            on_release: app.root.current = 'combatscreen'
+            text: 'Enter'
+            font_size: 20
+            size_hint: .08, .08
+
+<CombatScreen>:
+    name: 'combatscreen'
+    BoxLayout:
+        id: 'combatscreencontent'
+        Label:
+            text: 'Combat'
