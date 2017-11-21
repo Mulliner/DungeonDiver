@@ -19,21 +19,40 @@ def start():
     print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
     'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
 
-    announce('Mage, Warrior, Fighter, Cleric, Ranger or Paladin?')
+    announce('Warrior, Paladin, Fighter, Ranger, Cleric or Mage?')
     classtoplay = input('>>> ')
     character = dict()
-    if classtoplay.lower() == 'mage':
-        character['stats'] = c.mage()
-    elif classtoplay.lower() == 'warrior':
-        character['stats'] = c.warrior()
-    elif classtoplay.lower() == 'fighter':
-        character['stats'] = c.fighter()
-    elif classtoplay.lower() == 'cleric':
-        character['stats'] = c.cleric()
-    elif classtoplay.lower() == 'ranger':
-        character['stats'] = c.ranger()
+
+    if classtoplay.lower() == 'warrior':
+        character['stats'] = c.warrior()[0]
+        character['combatstats'] = c.warrior()[1]
+        character['abilities'] = c.warrior()[2]
+
     elif classtoplay.lower() == 'paladin':
-        character['stats'] = c.paladin()
+        character['stats'] = c.paladin()[0]
+        character['combatstats'] = c.paladin()[1]
+        character['abilities'] = c.paladin()[2]
+
+    elif classtoplay.lower() == 'fighter':
+        character['stats'] = c.fighter()[0]
+        character['combatstats'] = c.fighter()[1]
+        character['abilities'] = c.fighter()[2]
+
+    elif classtoplay.lower() == 'ranger':
+        character['stats'] = c.ranger()[0]
+        character['combatstats'] = c.ranger()[1]
+        character['abilities'] = c.ranger()[2]
+
+    elif classtoplay.lower() == 'cleric':
+        character['stats'] = c.cleric()[0]
+        character['combatstats'] = c.cleric()[1]
+        character['abilities'] = c.cleric()[2]
+
+    elif classtoplay.lower() == 'mage':
+            character['stats'] = c.mage()[0]
+            character['combatstats'] = c.mage()[1]
+            character['abilities'] = c.mage()[2]
+
     else:
         start()
 
@@ -75,18 +94,20 @@ def fight(character, mob, environment=None, mobindex=None):
 
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
-    if character['type'] == 'mage':
-        damagestat = round(character['stats']['intelligence'] * 1.4)
-    if character['type'] == 'warrior':
-        damagestat = round((character['stats']['vitality'] + character['stats']['strength']) * .75)
-    if character['type'] == 'fighter':
-        damagestat = round(character['stats']['strength'] * 1.2)
-    if character['type'] == 'ranger':
-        damagestat = round(character['stats']['dexterity'] * 1.3)
-    if character['type'] == 'paladin':
-        damagestat = round((character['stats']['vitality'] + character['stats']['piety']) * .65)
-    if character['type'] == 'cleric':
-        damagestat = round(character['stats']['piety'] * .9)
+    damagestat = character['combatstats']['basedamage']
+
+    # if character['type'] == 'mage':
+    #     damagestat = round(character['stats']['intelligence'] * 1.4)
+    # if character['type'] == 'warrior':
+    #     damagestat = round((character['stats']['vitality'] + character['stats']['strength']) * .75)
+    # if character['type'] == 'fighter':
+    #     damagestat = round(character['stats']['strength'] * 1.2)
+    # if character['type'] == 'ranger':
+    #     damagestat = round(character['stats']['dexterity'] * 1.3)
+    # if character['type'] == 'paladin':
+    #     damagestat = round((character['stats']['vitality'] + character['stats']['piety']) * .65)
+    # if character['type'] == 'cleric':
+    #     damagestat = round(character['stats']['piety'] * .9)
 
 
     while mob['health'] > 0:
@@ -96,6 +117,16 @@ def fight(character, mob, environment=None, mobindex=None):
 
         if action.lower() == 'basic':
             damage = randint(0, int(damagestat / 2))
+
+        elif action.lower() == 'ability':
+            announce('Which ability?')
+            abilites = [k for (k, v) in character['abilities'].items()]
+            announce(abilites)
+            abilityinput = input('>>> ').lower()
+            while abilityinput not in abilites:
+                abilityinput = input('>>> ').lower()
+            damage = randint(0, character['abilities'][abilityinput]['damage'])
+
         else:
             announce(Back.CYAN + 'Action not available, you forfeit your turn.')
             whoattacks = 1
