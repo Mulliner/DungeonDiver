@@ -49,9 +49,9 @@ def start():
         character['abilities'] = c.cleric()[2]
 
     elif classtoplay.lower() == 'mage':
-            character['stats'] = c.mage()[0]
-            character['combatstats'] = c.mage()[1]
-            character['abilities'] = c.mage()[2]
+        character['stats'] = c.mage()[0]
+        character['combatstats'] = c.mage()[1]
+        character['abilities'] = c.mage()[2]
 
     else:
         start()

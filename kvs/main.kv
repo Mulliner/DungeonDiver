@@ -27,7 +27,7 @@ ScreenManagement:
             on_release: app.root.current = 'charactername'
             text: 'Mage'
             font_size: 50
-            #: classtoplay 'Mage'
+            on_press: app.classtoplay('mage')
         Button:
             on_release: app.root.current = 'main'
             text: 'Warrior'

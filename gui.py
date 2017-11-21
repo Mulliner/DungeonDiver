@@ -38,5 +38,36 @@ class MainApp(App):
 
     c = Character()
 
+    def chooseclass(self, classtoplay):
+        if classtoplay.lower() == 'warrior':
+            character['stats'] = c.warrior()[0]
+            character['combatstats'] = c.warrior()[1]
+            character['abilities'] = c.warrior()[2]
+
+        elif classtoplay.lower() == 'paladin':
+            character['stats'] = c.paladin()[0]
+            character['combatstats'] = c.paladin()[1]
+            character['abilities'] = c.paladin()[2]
+
+        elif classtoplay.lower() == 'fighter':
+            character['stats'] = c.fighter()[0]
+            character['combatstats'] = c.fighter()[1]
+            character['abilities'] = c.fighter()[2]
+
+        elif classtoplay.lower() == 'ranger':
+            character['stats'] = c.ranger()[0]
+            character['combatstats'] = c.ranger()[1]
+            character['abilities'] = c.ranger()[2]
+
+        elif classtoplay.lower() == 'cleric':
+            character['stats'] = c.cleric()[0]
+            character['combatstats'] = c.cleric()[1]
+            character['abilities'] = c.cleric()[2]
+
+        elif classtoplay.lower() == 'mage':
+            character['stats'] = c.mage()[0]
+            character['combatstats'] = c.mage()[1]
+            character['abilities'] = c.mage()[2]
+
 if __name__ == '__main__':
     MainApp().run()

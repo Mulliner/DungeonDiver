@@ -11,15 +11,6 @@ class Character:
             'intelligence': 10,
             'piety': 2
         }
-<<<<<<< HEAD
-        abilities = [
-            {
-                'name': 'Fireblast',
-                'damage': stats['intelligence'] * 2,
-            }
-        ]
-        return [stats, abilities]
-=======
         combatstats = {
             'basedamage' : round(basestats['intelligence'] * 1.4)
         }
@@ -28,7 +19,6 @@ class Character:
             'manawall': basestats['vitality'] * .5
         }
         return basestats, combatstats, abilities
->>>>>>> 4120334c19e27d64ad48a0a8fe21b5ebef973c5f
 
     def warrior(self):
         basestats = {
