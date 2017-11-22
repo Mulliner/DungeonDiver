@@ -1,4 +1,5 @@
 import math
+import random
 import os
 from random import shuffle
 from random import randint
@@ -12,9 +13,6 @@ from environments import Environments
 def start():
     init(autoreset=True)
     c = Character()
-    with open('art/dungeon.txt') as f:
-        print(f.read())
-    print('')
 
     print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
     'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
@@ -67,21 +65,40 @@ def start():
     for k, v in character['stats'].items():
         announce('\t{stat}: {value}'.format(stat=k, value=v))
 
+    start_environment(character)
+
+def start_environment(character):
     env = Environments(level=character['level'])
-    environment = env.dungeon()
+    randomenv = random.randint(0, 1)
+    if randomenv == 0:
+        environment = env.dungeon()
+        with open('art/dungeon.txt') as f:
+            print(f.read())
+    elif randomenv == 1:
+        environment = env.forest()
+        with open('art/forest.txt') as f:
+            print(f.read())
+
     announce("You've entered a {env}! You sense {enemycount} enemies!".format(env=environment['name'],
                                                                               enemycount=len(environment['mobs'])))
 
     shuffle(environment['mobs'])
     for mob in environment['mobs']:
-        announce('Uh-oh! {mobname} attacks!'.format(mobname=mob['name']))
+        announce('Uh-oh! {mobname} attacks!\n\n'.format(mobname=mob['name']))
         fight(character, mob, environment, environment['mobs'].index(mob))
 
     announce("\nYou've cleared out all of the enemies, now its time for the boss!")
     if environment['boss']['name'] == 'Ogre':
         with open('art/ogre.txt', mode='r') as f:
             print(f.read())
-    fight(character, environment['boss'])
+    elif environment['boss']['name'] == 'Alpha Wolf':
+        with open('art/alphawolf.txt', mode='r') as f:
+            print(f.read())
+
+    bossfight = fight(character, environment['boss'])
+    if bossfight:
+        announce('You have beaten the boss! Moving on..')
+        start_environment(character)
 
 
 def fight(character, mob, environment=None, mobindex=None):
@@ -91,27 +108,23 @@ def fight(character, mob, environment=None, mobindex=None):
     elif mob['name'] == 'Skeleton':
         with open('art/skeleton.txt', mode='r') as f:
             print(f.read())
+    elif mob['name'] == 'Wolf':
+        with open('art/wolf.txt', mode='r') as f:
+            print(f.read())
+    elif mob['name'] == 'Rabid Squirrel':
+        with open('art/squirrel.txt', mode='r') as f:
+            print(f.read())
+    elif mob['name'] == 'Bear':
+        with open('art/Bear.txt', mode='r') as f:
+            print(f.read())
 
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
     damagestat = character['combatstats']['basedamage']
-
-    # if character['type'] == 'mage':
-    #     damagestat = round(character['stats']['intelligence'] * 1.4)
-    # if character['type'] == 'warrior':
-    #     damagestat = round((character['stats']['vitality'] + character['stats']['strength']) * .75)
-    # if character['type'] == 'fighter':
-    #     damagestat = round(character['stats']['strength'] * 1.2)
-    # if character['type'] == 'ranger':
-    #     damagestat = round(character['stats']['dexterity'] * 1.3)
-    # if character['type'] == 'paladin':
-    #     damagestat = round((character['stats']['vitality'] + character['stats']['piety']) * .65)
-    # if character['type'] == 'cleric':
-    #     damagestat = round(character['stats']['piety'] * .9)
-
+    abilities = [k for (k, v) in character['abilities'].items()]
 
     while mob['health'] > 0:
-        announce('\nWhat action will you do? (basic or ability)')
+        announce('\nWhat action will you do? (basic or ability | {abilities})'.format(abilities=abilities))
         whoattacks = randint(0, 1)
         action = prompt_fight_action()
 
@@ -120,13 +133,13 @@ def fight(character, mob, environment=None, mobindex=None):
 
         elif action.lower() == 'ability':
             announce('Which ability?')
-            abilites = [k for (k, v) in character['abilities'].items()]
-            announce(abilites)
+            announce(abilities)
             abilityinput = input('>>> ').lower()
-            while abilityinput not in abilites:
+            while abilityinput not in abilities:
                 abilityinput = input('>>> ').lower()
             damage = randint(0, character['abilities'][abilityinput]['damage'])
-
+        elif action.lower() in abilities:
+            damage = randint(0, character['abilities'][action.lower()]['damage'])
         else:
             announce(Back.CYAN + 'Action not available, you forfeit your turn.')
             whoattacks = 1
@@ -164,8 +177,10 @@ def fight(character, mob, environment=None, mobindex=None):
             level(character)
 
         if character['stats']['health'] <= 0:
-            announce('Game Over!')
+            os.system('cls')
+            announce('\tGame Over!\n\n\n')
             start()
+    return 'Fighting Done'
 
 
 def prompt_fight_action():

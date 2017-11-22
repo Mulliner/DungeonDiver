@@ -36,38 +36,42 @@ class MainApp(App):
     def build(self):
         return presentation
 
-    c = Character()
-
-    def chooseclass(self, classtoplay):
+    def classchosen(self, classtoplay):
+        self.c = Character()
+        self.character = dict()
         if classtoplay.lower() == 'warrior':
-            character['stats'] = c.warrior()[0]
-            character['combatstats'] = c.warrior()[1]
-            character['abilities'] = c.warrior()[2]
+            self.character['stats'] = self.c.warrior()[0]
+            self.character['combatstats'] = self.c.warrior()[1]
+            self.character['abilities'] = self.c.warrior()[2]
 
         elif classtoplay.lower() == 'paladin':
-            character['stats'] = c.paladin()[0]
-            character['combatstats'] = c.paladin()[1]
-            character['abilities'] = c.paladin()[2]
+            self.character['stats'] = self.c.paladin()[0]
+            self.character['combatstats'] = self.c.paladin()[1]
+            self.character['abilities'] = self.c.paladin()[2]
 
         elif classtoplay.lower() == 'fighter':
-            character['stats'] = c.fighter()[0]
-            character['combatstats'] = c.fighter()[1]
-            character['abilities'] = c.fighter()[2]
+            self.character['stats'] = self.c.fighter()[0]
+            self.character['combatstats'] = self.c.fighter()[1]
+            self.character['abilities'] = self.c.fighter()[2]
 
         elif classtoplay.lower() == 'ranger':
-            character['stats'] = c.ranger()[0]
-            character['combatstats'] = c.ranger()[1]
-            character['abilities'] = c.ranger()[2]
+            self.character['stats'] = self.c.ranger()[0]
+            self.character['combatstats'] = self.c.ranger()[1]
+            self.character['abilities'] = self.c.ranger()[2]
 
         elif classtoplay.lower() == 'cleric':
-            character['stats'] = c.cleric()[0]
-            character['combatstats'] = c.cleric()[1]
-            character['abilities'] = c.cleric()[2]
+            self.character['stats'] = self.c.cleric()[0]
+            self.character['combatstats'] = self.c.cleric()[1]
+            self.character['abilities'] = self.c.cleric()[2]
 
         elif classtoplay.lower() == 'mage':
-            character['stats'] = c.mage()[0]
-            character['combatstats'] = c.mage()[1]
-            character['abilities'] = c.mage()[2]
+            self.character['stats'] = self.c.mage()[0]
+            self.character['combatstats'] = self.c.mage()[1]
+            self.character['abilities'] = self.c.mage()[2]
+
+
+    def setupname(self, charactername):
+        self.character['name'] = charactername
 
 if __name__ == '__main__':
     MainApp().run()

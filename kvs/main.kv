@@ -27,42 +27,48 @@ ScreenManagement:
             on_release: app.root.current = 'charactername'
             text: 'Mage'
             font_size: 50
-            on_press: app.classtoplay('mage')
+            on_press: app.classchosen('mage')
         Button:
-            on_release: app.root.current = 'main'
+            on_release: app.root.current = 'charactername'
             text: 'Warrior'
             font_size: 50
+            on_press: app.classchosen('warrior')
 
         Button:
             on_release: app.root.current = 'main'
             text: 'Ranger'
             font_size: 50
+            on_press: app.classchosen('ranger')
 
         Button:
-            on_release: app.root.current = 'main'
+            on_release: app.root.current = 'charactername'
             text: 'Cleric'
             font_size: 50
+            on_press: app.classchosen('cleric')
 
         Button:
-            on_release: app.root.current = 'main'
+            on_release: app.root.current = 'charactername'
             text: 'Fighter'
             font_size: 50
+            on_press: app.classchosen('fighter')
 
         Button:
-            on_release: app.root.current = 'main'
+            on_release: app.root.current = 'charactername'
             text: 'Paladin'
             font_size: 50
+            on_press: app.classchosen('paladin')
 
 
 <CharacterNameScreen>:
     name: 'charactername'
+    id: characternamescreen
 
     BoxLayout:
         id: characternamecontent
         orientation: 'horizontal'
 
         TextInput:
-            id: charactername
+            id: enteredname
             size_hint: 1, .08
             multiline: False
 
@@ -71,10 +77,11 @@ ScreenManagement:
             text: 'Enter'
             font_size: 20
             size_hint: .08, .08
+            on_press: app.setupname(enteredname.text)
 
 <CombatScreen>:
     name: 'combatscreen'
     BoxLayout:
         id: 'combatscreencontent'
         Label:
-            text: 'Combat'
+            text:

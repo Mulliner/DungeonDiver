@@ -26,3 +26,26 @@ class Environments:
         }
 
         return objtoreturn
+
+    def forest(self):
+        mobs = list()
+        boss = self.enemies.alphawolf()
+
+        squirrelcount = random.randint(5, 13)
+        wolfcount = random.randint(5, 12)
+        bearcount = random.randint(1, 4)
+
+        for i in range(squirrelcount):
+            mobs.append(self.enemies.rabidsquirrel())
+        for i in range(wolfcount):
+            mobs.append(self.enemies.wolf())
+        for i in range(bearcount):
+            mobs.append(self.enemies.bear())
+
+        objtoreturn = {
+            'name': 'Forest',
+            'mobs': mobs,
+            'boss': boss
+        }
+
+        return objtoreturn
