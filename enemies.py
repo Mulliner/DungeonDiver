@@ -35,9 +35,9 @@ class Enemies:
         }
         return stats
 
-    def bear(self):
+    def couger(self):
         stats = {
-            'name': 'Bear',
+            'name': 'Couger',
             'health': int((7 + self.characterlevel) / 2),
             'damage': int((9 + self.characterlevel) / 1.7)
         }

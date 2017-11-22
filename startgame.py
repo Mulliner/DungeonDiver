@@ -114,8 +114,8 @@ def fight(character, mob, environment=None, mobindex=None):
     elif mob['name'] == 'Rabid Squirrel':
         with open('art/squirrel.txt', mode='r') as f:
             print(f.read())
-    elif mob['name'] == 'Bear':
-        with open('art/Bear.txt', mode='r') as f:
+    elif mob['name'] == 'Couger':
+        with open('art/couger.txt', mode='r') as f:
             print(f.read())
 
     higheststatvalue = 0
