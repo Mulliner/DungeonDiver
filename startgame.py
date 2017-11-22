@@ -174,7 +174,8 @@ def fight(character, mob, environment=None, mobindex=None):
 
         if mob['health'] <= 0:
             os.system('cls')
-            announce('{mobname} has died!\n'.format(mobname=mob['name']) + '^' * 80)
+            announce('{mobname} has died to your {damage} damage!\n\t'.format(mobname=mob['name'], damage=damage) +
+                     '^' * 50)
             character['experience'] += mobexperiencevalue
             heal(character)
             announce('{name} has gained {earnedexp} experience | '\
@@ -233,6 +234,7 @@ def level(character):
     character['experience'] = 0
     character['level'] += 1
     character = recalcstats(character['stats'], character['name'], character['level'], character['type'])
+    os.system('cls')
     print_stats(character)
     return character
 
