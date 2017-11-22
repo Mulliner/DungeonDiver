@@ -33,14 +33,14 @@ class Environments:
 
         squirrelcount = random.randint(5, 13)
         wolfcount = random.randint(5, 12)
-        cougercount = random.randint(1, 4)
+        cougarcount = random.randint(1, 4)
 
         for i in range(squirrelcount):
             mobs.append(self.enemies.rabidsquirrel())
         for i in range(wolfcount):
             mobs.append(self.enemies.wolf())
-        for i in range(bearcount):
-            mobs.append(self.enemies.couger())
+        for i in range(cougarcount):
+            mobs.append(self.enemies.cougar())
 
         objtoreturn = {
             'name': 'Forest',

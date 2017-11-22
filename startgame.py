@@ -19,52 +19,25 @@ def start():
 
     announce('Warrior, Paladin, Fighter, Ranger, Cleric or Mage?')
     classtoplay = input('>>> ')
-    character = dict()
-
-    if classtoplay.lower() == 'warrior':
-        character['stats'] = c.warrior()[0]
-        character['combatstats'] = c.warrior()[1]
-        character['abilities'] = c.warrior()[2]
-
-    elif classtoplay.lower() == 'paladin':
-        character['stats'] = c.paladin()[0]
-        character['combatstats'] = c.paladin()[1]
-        character['abilities'] = c.paladin()[2]
-
-    elif classtoplay.lower() == 'fighter':
-        character['stats'] = c.fighter()[0]
-        character['combatstats'] = c.fighter()[1]
-        character['abilities'] = c.fighter()[2]
-
-    elif classtoplay.lower() == 'ranger':
-        character['stats'] = c.ranger()[0]
-        character['combatstats'] = c.ranger()[1]
-        character['abilities'] = c.ranger()[2]
-
-    elif classtoplay.lower() == 'cleric':
-        character['stats'] = c.cleric()[0]
-        character['combatstats'] = c.cleric()[1]
-        character['abilities'] = c.cleric()[2]
-
-    elif classtoplay.lower() == 'mage':
-        character['stats'] = c.mage()[0]
-        character['combatstats'] = c.mage()[1]
-        character['abilities'] = c.mage()[2]
-
-    else:
+    try:
+        new_character = getattr(c, classtoplay.lower())()
+    except AttributeError:
         start()
+
+    character = dict()
+    character['stats'] = new_character[0]
+    character['combatstats'] = new_character[1]
+    character['abilities'] = new_character[2]
+    character['scalingstats'] = new_character[3]
+    character['maxstats'] = new_character[4]
 
     announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
     character['name'] = input('>>> ')
-    character['stats']['health'] = math.floor(character['stats']['vitality'] * .90)
     character['experience'] = 0
     character['level'] = 1
     character['type'] = classtoplay.lower()
 
-    announce('Here are your stats, {name}..\n'.format(name=character['name']))
-    for k, v in character['stats'].items():
-        announce('\t{stat}: {value}'.format(stat=k, value=v))
-
+    print_stats(character)
     start_environment(character)
 
 def start_environment(character):
@@ -85,7 +58,7 @@ def start_environment(character):
     shuffle(environment['mobs'])
     for mob in environment['mobs']:
         announce('Uh-oh! {mobname} attacks!\n\n'.format(mobname=mob['name']))
-        fight(character, mob, environment, environment['mobs'].index(mob))
+        character = fight(character, mob, environment, environment['mobs'].index(mob))
 
     announce("\nYou've cleared out all of the enemies, now its time for the boss!")
     if environment['boss']['name'] == 'Ogre':
@@ -95,10 +68,20 @@ def start_environment(character):
         with open('art/alphawolf.txt', mode='r') as f:
             print(f.read())
 
-    bossfight = fight(character, environment['boss'])
-    if bossfight:
+    character = fight(character, environment['boss'])
+    if character:
         announce('You have beaten the boss! Moving on..')
         start_environment(character)
+
+
+def print_stats(character):
+    announce('Here are your stats, {name}..\n'.format(name=character['name']))
+    for k, v in character['stats'].items():
+        announce('\t{stat}: {value}'.format(stat=k, value=v))
+    announce('-' * 50)
+    for k, v in character['scalingstats'].items():
+        announce('\t{stat}: {value}'.format(stat=k, value=v))
+
 
 
 def fight(character, mob, environment=None, mobindex=None):
@@ -114,8 +97,8 @@ def fight(character, mob, environment=None, mobindex=None):
     elif mob['name'] == 'Rabid Squirrel':
         with open('art/squirrel.txt', mode='r') as f:
             print(f.read())
-    elif mob['name'] == 'Couger':
-        with open('art/couger.txt', mode='r') as f:
+    elif mob['name'] == 'Cougar':
+        with open('art/cougar.txt', mode='r') as f:
             print(f.read())
 
     higheststatvalue = 0
@@ -156,12 +139,12 @@ def fight(character, mob, environment=None, mobindex=None):
             if mobdamage != 0:
                 announce(Fore.RED + '{mobname} attacks {name} for {damage} damage!'.format(mobname=mob['name'],
                     name=character['name'], damage=mobdamage))
-                character['stats']['health'] -= mobdamage
+                character['scalingstats']['health'] -= mobdamage
             else:
                 announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
 
         announce('{charname} health remaining: {charhealth} | {mobname} health remaining: {mobhealth}'
-            .format(charname=character['name'], charhealth=character['stats']['health'],
+            .format(charname=character['name'], charhealth=character['scalingstats']['health'],
                     mobname=mob['name'], mobhealth=mob['health']))
 
         if mob['health'] <= 0:
@@ -174,13 +157,13 @@ def fight(character, mob, environment=None, mobindex=None):
                                                exp=character['experience']))
 
         if character['experience'] >= character['level'] * 10:
-            level(character)
+            character = level(character)
 
-        if character['stats']['health'] <= 0:
+        if character['scalingstats']['health'] <= 0:
             os.system('cls')
             announce('\tGame Over!\n\n\n')
             start()
-    return 'Fighting Done'
+    return character
 
 
 def prompt_fight_action():
@@ -195,8 +178,7 @@ def level(character):
     while points > 0:
         announce('You have {points} points to spend!'.format(points=points))
         announce('Where would you like them to go? Enter in format "Amount:Attribute"')
-        for k, v in character['stats'].items():
-            announce('\t{stat}: {value}'.format(stat=k, value=v))
+        print_stats(character)
         wheretospend = input('>>> ').split(':')
         try:
             if int(wheretospend[0]) > points or int(wheretospend[0]) <= 0:
@@ -209,7 +191,6 @@ def level(character):
                 points -= int(wheretospend[0])
         except ValueError:
             continue
-
         amount = int(wheretospend[0])
         attribute = wheretospend[1].lower()
 
@@ -226,18 +207,32 @@ def level(character):
 
     character['experience'] = 0
     character['level'] += 1
-    character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
-    announce('Here are your new stats, {name}..\n'.format(name=character['name']))
-    for k, v in character['stats'].items():
-        announce('\t{stat}: {value}'.format(stat=k, value=v))
+    character = recalcstats(character['stats'], character['name'], character['level'], character['type'])
+    print_stats(character)
+    return character
 
+
+def recalcstats(stats, name, level, charactertype):
+    c = Character()
+    new_character = getattr(c, charactertype)(basestats=stats)
+    character = dict()
+    character['stats'] = new_character[0]
+    character['combatstats'] = new_character[1]
+    character['abilities'] = new_character[2]
+    character['scalingstats'] = new_character[3]
+    character['maxstats'] = new_character[4]
+    character['name'] = name
+    character['experience'] = 0
+    character['level'] = level
+    character['type'] = charactertype
+    return character
 
 def heal(character):
-    if character['stats']['health'] < math.floor(character['stats']['vitality'] * .85) - 3:
+    if character['scalingstats']['health'] < round(character['maxstats']['health'] * .7):
         healamount = randint(1, 3)
-        character['stats']['health'] += healamount
+        character['scalingstats']['health'] += healamount
         announce(Fore.GREEN + '{name} has been healed for {amount} ({currenthealth})'.format(name=character['name'],
-            amount=healamount, currenthealth=character['stats']['health']))
+            amount=healamount, currenthealth=character['scalingstats']['health']))
 
 
 def announce(annoucement):
