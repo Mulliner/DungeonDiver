@@ -195,7 +195,8 @@ def level(character):
     while points > 0:
         announce('You have {points} points to spend!'.format(points=points))
         announce('Where would you like them to go? Enter in format "Amount:Attribute"')
-        announce('{characterstats}' .format(characterstats=character['stats']))
+        for k, v in character['stats'].items():
+            announce('\t{stat}: {value}'.format(stat=k, value=v))
         wheretospend = input('>>> ').split(':')
         try:
             if int(wheretospend[0]) > points or int(wheretospend[0]) <= 0:
