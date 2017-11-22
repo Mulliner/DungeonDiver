@@ -1,5 +1,4 @@
-Change level up stats
-other shit
+
 
 
 Start game at level 100, do a major boss fight, who will win everytime.
@@ -7,7 +6,3 @@ Leveling up certain stats in a class can unlock subclasses ie. piety on a mage
   will unlock warlock
 
 make a hub world/village
-
-
-Nerf HP:
-  Seems if we only put points into vitality, we can mow down the environments. 
