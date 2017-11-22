@@ -22,8 +22,8 @@ class Enemies:
     def ogre(self):
         stats = {
             'name': 'Ogre',
-            'health': int((12 + self.characterlevel) / 2),
-            'damage': int((12 + self.characterlevel) / 3)
+            'health': int((12 + self.characterlevel)),
+            'damage': int((12 + self.characterlevel) / 3.5)
         }
         return stats
 
@@ -54,7 +54,7 @@ class Enemies:
     def alphawolf(self):
         stats = {
             'name': 'Alpha Wolf',
-            'health': int((12 + self.characterlevel) / 2),
+            'health': int((12 + self.characterlevel)),
             'damage': int((14 + self.characterlevel) / 1.2)
         }
         return stats
