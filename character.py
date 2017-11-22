@@ -33,8 +33,14 @@ class Character:
             'basedamage' : round(basestats['intelligence'] * 1.4)
         }
         abilities = {
-            'fireball': {'damage': round(combatstats['basedamage'] * 2), 'cost': 3},
-            'manawall': basestats['vitality'] * .5
+            'fireball': {'damage': round(combatstats['basedamage'] * 2),
+                         'cost': 3,
+                         'costtype': 'mana',
+                         'abilitytype': 'damage'},
+            'manawall': {'buff': basestats['vitality'] * .5,
+                         'cost': 3,
+                         'costtype': 'mana',
+                         'abilitytype': 'buff'}
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
 
@@ -65,7 +71,10 @@ class Character:
             'basedamage' : round((basestats['vitality'] + basestats['strength']) * .4)
         }
         abilities = {
-            'overwhelm': {'damage': round(combatstats['basedamage'] * 1.4)}
+            'overwhelm': {'damage': round(combatstats['basedamage'] * 1.4),
+                          'cost': 3,
+                          'costtype': 'stamina',
+                          'abilitytype': 'damage'}
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
 
@@ -96,7 +105,10 @@ class Character:
             'basedamage' : round(basestats['strength'] * 1.3)
         }
         abilities = {
-            'brutalize': {'damage': round(combatstats['basedamage'] * 1.8)}
+            'brutalize': {'damage': round(combatstats['basedamage'] * 1.8),
+                          'cost': 3,
+                          'costtype': 'stamin',
+                          'abilitytype': 'damage'},
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
     def ranger(self, basestats=None):
@@ -126,7 +138,10 @@ class Character:
             'basedamage' : round(basestats['dexterity'] * 1.2)
         }
         abilities = {
-            'assassinate': {'damage': round(combatstats['basedamage'] * 2.4)}
+            'assassinate': {'damage': round(combatstats['basedamage'] * 2.4),
+                            'cost': 3,
+                            'costtype': 'stamina',
+                            'abilitytype': 'damage'},
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
 
@@ -157,7 +172,10 @@ class Character:
             'basedamage' : round((basestats['vitality'] + basestats['piety']) * .35)
         }
         abilities = {
-            'smite': {'damage': round(combatstats['basedamage'] * 1.8)}
+            'smite': {'damage': round(combatstats['basedamage'] * 1.8),
+                      'cost': 3,
+                      'costtype': 'mana',
+                      'abilitytype': 'damage'},
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
 
@@ -188,6 +206,9 @@ class Character:
             'basedamage' : round(basestats['piety'] * .9)
         }
         abilities = {
-            'holy': {'damage': round(combatstats['basedamage'] * 3)}
+            'holy': {'damage': round(combatstats['basedamage'] * 3),
+                     'cost': 3,
+                     'costtype': 'mana',
+                     'abilitytype': 'damage'},
         }
         return basestats, combatstats, abilities, scalingstats, maxstats

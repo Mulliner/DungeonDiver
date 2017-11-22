@@ -107,8 +107,12 @@ def fight(character, mob, environment=None, mobindex=None):
     abilities = [k for (k, v) in character['abilities'].items()]
 
     while mob['health'] > 0:
+        announce('You have health: {charhealth}, mana: {charmana}, stamina: {charstamina}. | {mobname} has {mobhealth}'\
+                 ' health.'
+                 .format(charhealth=character['scalingstats']['health'], charmana=character['scalingstats']['mana'],
+                         charstamina=character['scalingstats']['stamina'], mobname=mob['name'], mobhealth=mob['health']))
+
         announce('\nWhat action will you do? (basic or ability | {abilities})'.format(abilities=abilities))
-        whoattacks = randint(0, 1)
         action = prompt_fight_action()
 
         if action.lower() == 'basic':
@@ -120,28 +124,49 @@ def fight(character, mob, environment=None, mobindex=None):
             abilityinput = input('>>> ').lower()
             while abilityinput not in abilities:
                 abilityinput = input('>>> ').lower()
-            damage = randint(0, character['abilities'][abilityinput]['damage'])
-        elif action.lower() in abilities:
-            damage = randint(0, character['abilities'][action.lower()]['damage'])
-        else:
-            announce(Back.CYAN + 'Action not available, you forfeit your turn.')
-            whoattacks = 1
 
-        if whoattacks == 0:
-            if damage != 0:
-                announce(Fore.YELLOW + "{name} attacks {mobname} for {damage} damage!".format(mobname=mob['name'],
-                    name=character['name'], damage=damage))
-                mob['health'] -= damage
+            costtype = character['abilities'][abilityinput]['costtype']
+            if character['scalingstats'][costtype] != 0:
+                damage = randint(0, character['abilities'][abilityinput]['damage'])
+                character['scalingstats'][costtype] -= character['abilities'][abilityinput]['cost']
             else:
-                announce(Back.YELLOW + "{name} missed!".format(name=character['name']))
+                announce('Not enough {costtype} to use {ability}. Performing basic attack.'
+                         .format(costtype=costtype, ability=action.lower()))
+                damage = randint(0, int(damagestat / 2))
+
+        elif action.lower() in abilities:
+            costtype = character['abilities'][action.lower()]['costtype']
+            abilitytype = character['abilities'][action.lower()]['abilitytype']
+            if character['scalingstats'][costtype] >= character['abilities'][action.lower()]['cost']:
+                if abilitytype == 'damage':
+                    damage = randint(0, character['abilities'][action.lower()][abilitytype])
+                else:
+                    damage = -1
+                character['scalingstats'][costtype] -= character['abilities'][action.lower()]['cost']
+            else:
+                announce('Not enough {costtype} to use {ability}. Performing basic attack.'
+                         .format(costtype=costtype, ability=action.lower()))
+                damage = randint(0, int(damagestat / 2))
         else:
-            mobdamage = randint(0, mob['damage'])
-            if mobdamage != 0:
-                announce(Fore.RED + '{mobname} attacks {name} for {damage} damage!'.format(mobname=mob['name'],
-                    name=character['name'], damage=mobdamage))
-                character['scalingstats']['health'] -= mobdamage
-            else:
-                announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
+            announce(Back.CYAN + 'Action not available')
+            damage = 0
+
+        if damage > 0:
+            announce(Fore.YELLOW + "{name} attacks {mobname} for {damage} damage!".format(mobname=mob['name'],
+                name=character['name'], damage=damage))
+            mob['health'] -= damage
+        elif damage == 0:
+            announce(Back.YELLOW + "{name} missed!".format(name=character['name']))
+        else:
+            pass
+
+        mobdamage = randint(0, mob['damage'])
+        if mobdamage != 0:
+            announce(Fore.RED + '{mobname} attacks {name} for {damage} damage!'.format(mobname=mob['name'],
+                name=character['name'], damage=mobdamage))
+            character['scalingstats']['health'] -= mobdamage
+        else:
+            announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
 
         announce('{charname} health remaining: {charhealth} | {mobname} health remaining: {mobhealth}'
             .format(charname=character['name'], charhealth=character['scalingstats']['health'],
