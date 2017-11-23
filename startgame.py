@@ -262,8 +262,9 @@ def fight(character, mob, environment=None, mobindex=None):
                 name=character['name'], damage=damage))
             mob['health'] -= damage
         elif damage == -1:
-            announce(Back.YELLOW + Fore.RED + "{name} used a buff! This will last until your next level up, '\
-                     'or until your stats fall below the buff amount.".format(name=character['name']))
+            announce(Back.BLUE + Fore.GREEN +
+                     "{name} used a buff! This will last until your next level up, or " +
+                     "until your stats fall below the buff amount.".format(name=character['name']))
             if character['abilities'][action.lower()]['stattobuff'] == 'health':
                 character['scalingstats']['health'] += int(character['abilities'][action.lower()]['buff'])
                 announce(Back.BLUE + Fore.GREEN + "{name} now has temporary buff of {amount} to your health!"
