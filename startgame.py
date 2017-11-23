@@ -82,9 +82,7 @@ def read_character_config():
     charconf = configmanager.readconfig('charconfig.ini')
     character = dict()
     character['name'] = charconf['character']['name']
-    charconf['character'].pop('name') # Remove name from the charconfig read
     character['type'] = charconf['character']['type']
-    charconf['character'].pop('type') # Remove type from the charconfig read
     characterobj = getattr(c, character['type'])()
     character['abilities'] = characterobj[2]
     character['level'] = int(charconf['character']['level'])
