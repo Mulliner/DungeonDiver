@@ -263,8 +263,8 @@ def fight(character, mob, environment=None, mobindex=None):
             mob['health'] -= damage
         elif damage == -1:
             announce(Back.BLUE + Fore.GREEN +
-                     "{name} used a buff! This will last until your next level up, or " +
-                     "until your stats fall below the buff amount.".format(name=character['name']))
+                     "{name} used a buff! This will last until your next level up, or ".format(name=character['name']) +
+                     "until your stats fall below the buff amount.")
             if character['abilities'][action.lower()]['stattobuff'] == 'health':
                 character['scalingstats']['health'] += int(character['abilities'][action.lower()]['buff'])
                 announce(Back.BLUE + Fore.GREEN + "{name} now has temporary buff of {amount} to your health!"
@@ -300,14 +300,15 @@ def fight(character, mob, environment=None, mobindex=None):
                      'Total exp: {exp}'.format(name=character['name'], earnedexp=mobexperiencevalue,
                                                exp=character['experience']))
 
-        if character['experience'] >= character['level'] * 10:
-            character = level(character)
-
         if character['scalingstats']['health'] <= 0:
             os.system('cls')
             reset_game()
             announce('\tGame Over!\n\n\n')
             start()
+
+        if character['experience'] >= character['level'] * 10:
+            character = level(character)
+            
         write_character_config(character)
     return character
 
