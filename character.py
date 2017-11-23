@@ -13,7 +13,8 @@ class Character:
                 'strength': 3,
                 'dexterity': 4,
                 'intelligence': 10,
-                'piety': 2
+                'piety': 2,
+                'luck': 5
             }
         maxstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -51,7 +52,8 @@ class Character:
                 'strength' : 8,
                 'dexterity' : 4,
                 'intelligence' : 1,
-                'piety' : 2
+                'piety' : 2,
+                'luck': 5
             }
         maxstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -85,7 +87,8 @@ class Character:
                 'strength': 10,
                 'dexterity': 5,
                 'intelligence': 1,
-                'piety': 3
+                'piety': 3,
+                'luck': 5
             }
         maxstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -118,7 +121,8 @@ class Character:
                 'strength' : 5,
                 'dexterity' : 10,
                 'intelligence' : 3,
-                'piety' : 1
+                'piety' : 1,
+                'luck': 5
             }
         maxstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -152,7 +156,8 @@ class Character:
                 'strength': 5,
                 'dexterity': 3,
                 'intelligence': 1,
-                'piety': 6
+                'piety': 6,
+                'luck': 5
             }
         maxstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -186,7 +191,8 @@ class Character:
                 'strength': 3,
                 'dexterity': 4,
                 'intelligence': 2,
-                'piety': 10
+                'piety': 10,
+                'luck': 5
             }
         maxstats = {
             'health': math.floor(basestats['vitality'] * .90),
