@@ -107,7 +107,7 @@ class Character:
         abilities = {
             'brutalize': {'damage': round(combatstats['basedamage'] * 1.8),
                           'cost': 3,
-                          'costtype': 'stamin',
+                          'costtype': 'stamina',
                           'abilitytype': 'damage'},
         }
         return basestats, combatstats, abilities, scalingstats, maxstats

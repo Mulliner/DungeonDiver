@@ -6,6 +6,8 @@ from random import randint
 from colorama import init
 from colorama import Fore, Back, Style
 
+
+import configmanager
 from character import Character
 from environments import Environments
 
@@ -13,32 +15,94 @@ from environments import Environments
 def start():
     init(autoreset=True)
     c = Character()
+    charconfig = read_character_config()
+    pu = 'n' # Default "promptuser to no"
+    if charconfig['name'] != 'Default':
+        announce('We found a previous character, would you like to continue? y/n')
+        pu = input('>>> ')
+        if pu.lower() == 'y':
+            character = charconfig
+        else:
+            pu = 'n' # For pu to become no, regardless of what the user enters.
 
-    print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
-    'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
+    if pu == 'n':
+        print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
+        'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
 
-    announce('Warrior, Paladin, Fighter, Ranger, Cleric or Mage?')
-    classtoplay = input('>>> ')
-    try:
-        new_character = getattr(c, classtoplay.lower())()
-    except AttributeError:
-        start()
+        announce('Warrior, Paladin, Fighter, Ranger, Cleric or Mage?')
+        classtoplay = input('>>> ')
+        try:
+            new_character = getattr(c, classtoplay.lower())()
+        except AttributeError:
+            start()
 
-    character = dict()
-    character['stats'] = new_character[0]
-    character['combatstats'] = new_character[1]
-    character['abilities'] = new_character[2]
-    character['scalingstats'] = new_character[3]
-    character['maxstats'] = new_character[4]
+        character = dict()
+        character['stats'] = new_character[0]
+        character['combatstats'] = new_character[1]
+        character['abilities'] = new_character[2]
+        character['scalingstats'] = new_character[3]
+        character['maxstats'] = new_character[4]
 
-    announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
-    character['name'] = input('>>> ')
-    character['experience'] = 0
-    character['level'] = 1
-    character['type'] = classtoplay.lower()
+        announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
+        character['name'] = input('>>> ')
+        character['experience'] = 0
+        character['level'] = 1
+        character['type'] = classtoplay.lower()
 
-    print_stats(character)
+        print_stats(character)
+        write_character_config(character)
+
     start_environment(character)
+
+
+def write_character_config(character):
+    charconf = configmanager.readconfig('charconfig.ini')
+    charconf['character']['name'] = str(character['name'])
+    charconf['character']['experience'] = str(character['experience'])
+    charconf['character']['level'] = str(character['level'])
+    charconf['character']['type'] = str(character['type'])
+    for stat in character['stats']:
+        charconf['stats'][stat] = str(character['stats'][stat])
+    for stat in character['scalingstats']:
+        charconf['scalingstats'][stat] = str(character['scalingstats'][stat])
+    for stat in character['combatstats']:
+        charconf['combatstats'][stat] = str(character['combatstats'][stat])
+
+    write_character = configmanager.writeconfig('charconfig.ini', charconf)
+
+
+def reset_game():
+    charconf = configmanager.readconfig('charconfig.ini')
+    charconf['character']['name'] = 'Default'
+    charconf['loot']['gold'] = '0'
+    configmanager.writeconfig('charconfig.ini', charconf)
+
+def read_character_config():
+    c = Character()
+    charconf = configmanager.readconfig('charconfig.ini')
+    character = dict()
+    character['name'] = charconf['character']['name']
+    charconf['character'].pop('name') # Remove name from the charconfig read
+    character['type'] = charconf['character']['type']
+    charconf['character'].pop('type') # Remove type from the charconfig read
+    characterobj = getattr(c, character['type'])()
+    character['abilities'] = characterobj[2]
+    character['level'] = int(charconf['character']['level'])
+    character['experience'] = int(charconf['character']['experience'])
+    character['stats'] = dict()
+    character['scalingstats'] = dict()
+    character['maxstats'] = dict()
+    character['combatstats'] = dict()
+
+    for key in charconf['stats']:
+        character['stats'][key] = int(charconf['stats'][key])
+    for key in charconf['scalingstats']:
+        character['scalingstats'][key] = int(charconf['scalingstats'][key])
+        character['maxstats'][key] = int(charconf['scalingstats'][key])
+    for key in charconf['combatstats']:
+        character['combatstats'][key] = int(charconf['combatstats'][key])
+    return character
+
 
 def start_environment(character):
     env = Environments(level=character['level'])
@@ -105,6 +169,7 @@ def fight(character, mob, environment=None, mobindex=None):
     mobexperiencevalue = mob['health']
     damagestat = character['combatstats']['basedamage']
     abilities = [k for (k, v) in character['abilities'].items()]
+    abilities.append('basic')
 
     while mob['health'] > 0:
         announce('You have health: {charhealth}, mana: {charmana}, stamina: {charstamina}. | {mobname} has {mobhealth}'\
@@ -112,7 +177,7 @@ def fight(character, mob, environment=None, mobindex=None):
                  .format(charhealth=character['scalingstats']['health'], charmana=character['scalingstats']['mana'],
                          charstamina=character['scalingstats']['stamina'], mobname=mob['name'], mobhealth=mob['health']))
 
-        announce('\nWhat action will you do? (basic or ability | {abilities})'.format(abilities=abilities))
+        announce('\nWhat action will you do? ({abilities})'.format(abilities=abilities))
         action = prompt_fight_action()
 
         if action.lower() == 'basic':
@@ -168,10 +233,6 @@ def fight(character, mob, environment=None, mobindex=None):
         else:
             announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
 
-        announce('{charname} health remaining: {charhealth} | {mobname} health remaining: {mobhealth}'
-            .format(charname=character['name'], charhealth=character['scalingstats']['health'],
-                    mobname=mob['name'], mobhealth=mob['health']))
-
         if mob['health'] <= 0:
             os.system('cls')
             announce('{mobname} has died to your {damage} damage!\n\t'.format(mobname=mob['name'], damage=damage) +
@@ -187,8 +248,10 @@ def fight(character, mob, environment=None, mobindex=None):
 
         if character['scalingstats']['health'] <= 0:
             os.system('cls')
+            reset_game()
             announce('\tGame Over!\n\n\n')
             start()
+        write_character_config(character)
     return character
 
 
@@ -236,6 +299,7 @@ def level(character):
     character = recalcstats(character['stats'], character['name'], character['level'], character['type'])
     os.system('cls')
     print_stats(character)
+    write_character_config(character)
     return character
 
 
