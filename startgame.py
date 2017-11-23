@@ -1,8 +1,10 @@
 import math
 import random
 import os
+import sys
 from random import shuffle
 from random import randint
+from random import choice
 from colorama import init
 from colorama import Fore, Back, Style
 
@@ -126,6 +128,11 @@ def enter_hub_world(character):
         print_inventory(character)
     elif action.lower() == 'cls':
         clear_command_line()
+    elif action.lower() == 'q':
+        clear_command_line()
+        write_character_config(character)
+        announce('Saving Character, then exiting!')
+        sys.exit()
 
     enter_hub_world(character)
 
@@ -136,13 +143,14 @@ def clear_command_line():
 
 def start_environment(character):
     env = Environments(level=character['level'])
-    randomenv = random.randint(0, 1)
-    if randomenv == 0:
-        environment = env.dungeon()
+    possible_environments = [func for func in dir(env) if callable(getattr(env, func)) and '_' not in func]
+    chosenenv = random.choice(possible_environments)
+    environment = getattr(env, chosenenv)()
+
+    if chosenenv == 'dungeon':
         with open('art/dungeon.txt') as f:
             print(f.read())
-    elif randomenv == 1:
-        environment = env.forest()
+    elif chosenenv == 'forest':
         with open('art/forest.txt') as f:
             print(f.read())
 
@@ -219,6 +227,19 @@ def fight(character, mob, environment=None, mobindex=None):
             damage = randint(0, int(damagestat / 2))
         elif action.lower() == 'cls':
             clear_command_line()
+            fight(character, mob, environment=environment, mobindex=mobindex)
+            break
+        elif action.lower() == 'h':
+            clear_command_line()
+            announce('Heading back to the hub..')
+            write_character_config(character)
+            enter_hub_world(character)
+            break
+        elif action.lower() == 'q':
+            clear_command_line()
+            write_character_config(character)
+            announce('Saving Character, then exiting!')
+            sys.exit()
         elif action.lower() in abilities:
             costtype = character['abilities'][action.lower()]['costtype']
             abilitytype = character['abilities'][action.lower()]['abilitytype']
@@ -263,7 +284,7 @@ def fight(character, mob, environment=None, mobindex=None):
             announce('*' * 50 + '\n')
             announce('{mobname} has died to your {damage} damage!\n\t'.format(mobname=mob['name'], damage=damage))
             if goldearned:
-                announce('{mobname} has dropped {gold} gold.'.format(mobname=mob['name'], gold=str(goldearned)))
+                announce(Back.YELLOW + Fore.GREEN + '{mobname} has dropped {gold} gold.'.format(mobname=mob['name'], gold=str(goldearned)))
             announce('*' * 50)
             character['experience'] += mobexperiencevalue
             heal(character)
