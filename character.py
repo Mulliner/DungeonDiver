@@ -41,7 +41,8 @@ class Character:
             'manawall': {'buff': basestats['vitality'] * .5,
                          'cost': 3,
                          'costtype': 'mana',
-                         'abilitytype': 'buff'}
+                         'abilitytype': 'buff',
+                         'stattobuff': 'health'}
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
 
@@ -76,7 +77,12 @@ class Character:
             'overwhelm': {'damage': round(combatstats['basedamage'] * 1.4),
                           'cost': 3,
                           'costtype': 'stamina',
-                          'abilitytype': 'damage'}
+                          'abilitytype': 'damage'},
+            'warcry': {'buff': maxstats['health'] * .8,
+                       'cost': 7,
+                       'costtype': 'stamina',
+                       'abilitytype': 'buff',
+                       'stattobuff': 'health'}
         }
         return basestats, combatstats, abilities, scalingstats, maxstats
 
