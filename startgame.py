@@ -142,7 +142,7 @@ def enter_hub_world(character):
     elif action.lower() == 'q':
         clear_command_line()
         write_character_config(character)
-        announce('Saving Character, then exiting!')
+        announce('Character Saved!')
         sys.exit()
 
     enter_hub_world(character)
