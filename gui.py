@@ -19,59 +19,27 @@ class MainScreen(Screen):
     pass
 
 class ClassSelectScreen(Screen):
-    pass
-
-class CharacterNameScreen(Screen):
-    pass
+    def classchosen(self, classtoplay):
+        self.c = Character()
+        self.character = dict()
+        self.character['stats'] = getattr(self.c, classtoplay)()[0]
+        self.character['combatstats'] = getattr(self.c, classtoplay)()[1]
+        self.character['abilities'] = getattr(self.c, classtoplay)()[2]
+        print(self.character)
+        return self.character
 
 class CombatScreen(Screen):
-    pass
+    app = App.get_running_app()
 
 class ScreenManagement(ScreenManager):
     pass
 
 presentation = Builder.load_file("kvs\main.kv")
 
+
 class MainApp(App):
     def build(self):
         return presentation
-
-    def classchosen(self, classtoplay):
-        self.c = Character()
-        self.character = dict()
-        if classtoplay.lower() == 'warrior':
-            self.character['stats'] = self.c.warrior()[0]
-            self.character['combatstats'] = self.c.warrior()[1]
-            self.character['abilities'] = self.c.warrior()[2]
-
-        elif classtoplay.lower() == 'paladin':
-            self.character['stats'] = self.c.paladin()[0]
-            self.character['combatstats'] = self.c.paladin()[1]
-            self.character['abilities'] = self.c.paladin()[2]
-
-        elif classtoplay.lower() == 'fighter':
-            self.character['stats'] = self.c.fighter()[0]
-            self.character['combatstats'] = self.c.fighter()[1]
-            self.character['abilities'] = self.c.fighter()[2]
-
-        elif classtoplay.lower() == 'ranger':
-            self.character['stats'] = self.c.ranger()[0]
-            self.character['combatstats'] = self.c.ranger()[1]
-            self.character['abilities'] = self.c.ranger()[2]
-
-        elif classtoplay.lower() == 'cleric':
-            self.character['stats'] = self.c.cleric()[0]
-            self.character['combatstats'] = self.c.cleric()[1]
-            self.character['abilities'] = self.c.cleric()[2]
-
-        elif classtoplay.lower() == 'mage':
-            self.character['stats'] = self.c.mage()[0]
-            self.character['combatstats'] = self.c.mage()[1]
-            self.character['abilities'] = self.c.mage()[2]
-
-
-    def setupname(self, charactername):
-        self.character['name'] = charactername
 
 if __name__ == '__main__':
     MainApp().run()

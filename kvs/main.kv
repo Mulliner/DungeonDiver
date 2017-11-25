@@ -1,11 +1,16 @@
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
 
 ScreenManagement:
+    id: screen_manager
     transition: FadeTransition()
     MainScreen:
     ClassSelectScreen:
-    CharacterNameScreen:
+        name: 'ClassSelectScreen'
+        manager: screen_manager
+
     CombatScreen:
+        name: 'CombatScreen'
+        manager: screen_manager
 
 <MainScreen>:
     name: 'main'
@@ -13,21 +18,20 @@ ScreenManagement:
         orientation: 'vertical'
 
         Button:
-            on_release: app.root.current = 'classselect'
+            on_release: app.root.current = 'ClassSelectScreen'
             text: 'Class'
             font_size: 50
 
 
 <ClassSelectScreen>:
-    name: 'classselect'
-
     BoxLayout:
         orientation: 'vertical'
         Button:
-            on_release: app.root.current = 'charactername'
+            on_release: app.root.current = 'CombatScreen'
             text: 'Mage'
             font_size: 50
-            on_press: app.classchosen('mage')
+            on_press: root.classchosen('mage')
+
         Button:
             on_release: app.root.current = 'charactername'
             text: 'Warrior'
@@ -58,30 +62,19 @@ ScreenManagement:
             font_size: 50
             on_press: app.classchosen('paladin')
 
+        BoxLayout:
+            orientation: 'horizontal'
+            TextInput:
+                id: enteredname
+                size_hint: 1, 1
+                multiline: False
+                on_text: app.charactername = self.text
 
-<CharacterNameScreen>:
-    name: 'charactername'
-    id: characternamescreen
-
-    BoxLayout:
-        id: characternamecontent
-        orientation: 'horizontal'
-
-        TextInput:
-            id: enteredname
-            size_hint: 1, .08
-            multiline: False
-
-        Button:
-            on_release: app.root.current = 'combatscreen'
-            text: 'Enter'
-            font_size: 20
-            size_hint: .08, .08
-            on_press: app.setupname(enteredname.text)
+            Button:
+                text: 'Enter'
+                font_size: 20
+                size_hint: .08, 1
 
 <CombatScreen>:
-    name: 'combatscreen'
-    BoxLayout:
-        id: 'combatscreencontent'
-        Label:
-            text:
+    Label:
+        id: label1

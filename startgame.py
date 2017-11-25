@@ -56,7 +56,6 @@ def start():
         print_stats(character)
         write_character_config(character)
 
-    # start_environment(character)
     enter_hub_world(character)
 
 
@@ -308,7 +307,7 @@ def fight(character, mob, environment=None, mobindex=None):
 
         if character['experience'] >= character['level'] * 10:
             character = level(character)
-            
+
         write_character_config(character)
     return character
 
