@@ -42,8 +42,8 @@ def start():
         character['stats'] = new_character[0]
         character['combatstats'] = new_character[1]
         character['abilities'] = new_character[2]
-        character['scalingstats'] = new_character[3]
-        character['maxstats'] = new_character[4]
+        character['scalingstats'] = calcmaxstats(character['stats'])
+        character['maxstats'] = calcmaxstats(character['stats'])
         character['inventory'] = dict()
         character['inventory']['gold'] = 0
 
@@ -58,6 +58,15 @@ def start():
 
     enter_hub_world(character)
 
+def calcmaxstats(stats):
+    maxstats = {
+        'health': math.floor(stats['vitality'] * .90),
+        'stamina': round(stats['vitality'] / 3) +
+                   round(stats['strength'] / 3) +
+                   round(stats['dexterity'] / 3),
+        'mana': round((stats['intelligence'] +  stats['piety']) * .90),
+    }
+    return maxstats
 
 def write_character_config(character):
     charconf = configmanager.readconfig('charconfig.ini')
@@ -81,7 +90,7 @@ def reset_game():
     charconf = configmanager.readconfig('defaultcharconfig.ini')
     configmanager.writeconfig('charconfig.ini', charconf)
 
-def read_character_config():
+def read_character_config(basestats=None):
     c = Character()
     charconf = configmanager.readconfig('charconfig.ini')
     character = dict()
@@ -90,7 +99,10 @@ def read_character_config():
         return character
 
     character['type'] = charconf['character']['type']
-    characterobj = getattr(c, character['type'])()
+    if basestats:
+        characterobj = getattr(c, character['type'])(basestats=basestats)
+    else:
+        characterobj = getattr(c, character['type'])()
     character['abilities'] = characterobj[2]
     character['level'] = int(charconf['character']['level'])
     character['experience'] = int(charconf['character']['experience'])
@@ -342,20 +354,11 @@ def level(character):
         attribute = wheretospend[1].lower()
 
         character['stats'][attribute] += amount
-        # if attribute == 'vitality':
-        #     character['stats']['vitality'] += amount
-        # elif attribute == 'intelligence':
-        #     character['stats']['intelligence'] += amount
-        # elif attribute == 'strength':
-        #     character['stats']['strength'] += amount
-        # elif attribute == 'dexterity':
-        #     character['stats']['dexterity'] += amount
-        # elif attribute == 'piety':
-        #     character['stats']['piety'] += amount
 
-    character['experience'] = 0
+    character['experience'] = character['experience'] - character['level'] * 10
     character['level'] += 1
-    # character = recalcstats(character['stats'], character['name'], character['level'], character['type'])
+
+    character['maxstats'] = calcmaxstats(character['stats'])
 
     # Reset health
     character['scalingstats']['health'] = character['maxstats']['health']
@@ -369,21 +372,6 @@ def level(character):
     write_character_config(character)
     return character
 
-
-# def recalcstats(stats, name, level, charactertype):
-#     c = Character()
-#     new_character = getattr(c, charactertype)(basestats=stats)
-#     character = dict()
-#     character['stats'] = new_character[0]
-#     character['combatstats'] = new_character[1]
-#     character['abilities'] = new_character[2]
-#     character['scalingstats'] = new_character[3]
-#     character['maxstats'] = new_character[4]
-#     character['name'] = name
-#     character['experience'] = 0
-#     character['level'] = level
-#     character['type'] = charactertype
-#     return character
 
 def heal(character):
     if character['scalingstats']['health'] < round(character['maxstats']['health'] * .7):
