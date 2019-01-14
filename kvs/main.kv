@@ -1,0 +1,80 @@
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+ScreenManagement:
+    id: screen_manager
+    transition: FadeTransition()
+    MainScreen:
+    ClassSelectScreen:
+        name: 'ClassSelectScreen'
+        manager: screen_manager
+
+    CombatScreen:
+        name: 'CombatScreen'
+        manager: screen_manager
+
+<MainScreen>:
+    name: 'main'
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            on_release: app.root.current = 'ClassSelectScreen'
+            text: 'Class'
+            font_size: 50
+
+
+<ClassSelectScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            on_release: app.root.current = 'CombatScreen'
+            text: 'Mage'
+            font_size: 50
+            on_press: root.classchosen('mage')
+
+        Button:
+            on_release: app.root.current = 'charactername'
+            text: 'Warrior'
+            font_size: 50
+            on_press: app.classchosen('warrior')
+
+        Button:
+            on_release: app.root.current = 'main'
+            text: 'Ranger'
+            font_size: 50
+            on_press: app.classchosen('ranger')
+
+        Button:
+            on_release: app.root.current = 'charactername'
+            text: 'Cleric'
+            font_size: 50
+            on_press: app.classchosen('cleric')
+
+        Button:
+            on_release: app.root.current = 'charactername'
+            text: 'Fighter'
+            font_size: 50
+            on_press: app.classchosen('fighter')
+
+        Button:
+            on_release: app.root.current = 'charactername'
+            text: 'Paladin'
+            font_size: 50
+            on_press: app.classchosen('paladin')
+
+        BoxLayout:
+            orientation: 'horizontal'
+            TextInput:
+                id: enteredname
+                size_hint: 1, 1
+                multiline: False
+                on_text: app.charactername = self.text
+
+            Button:
+                text: 'Enter'
+                font_size: 20
+                size_hint: .08, 1
+
+<CombatScreen>:
+    Label:
+        id: label1

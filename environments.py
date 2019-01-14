@@ -11,13 +11,39 @@ class Environments:
         mobs = list()
         boss = self.enemies.ogre()
 
-        for i in range(2, 8):
+        skeletoncount = random.randint(2, 9)
+        batcount = random.randint(5, 18)
+
+        for i in range(skeletoncount):
             mobs.append(self.enemies.skeleton())
-        for i in range(5, 17):
+        for i in range(batcount):
             mobs.append(self.enemies.bat())
 
         objtoreturn = {
             'name': 'Dungeon',
+            'mobs': mobs,
+            'boss': boss
+        }
+
+        return objtoreturn
+
+    def forest(self):
+        mobs = list()
+        boss = self.enemies.alphawolf()
+
+        squirrelcount = random.randint(5, 13)
+        wolfcount = random.randint(5, 12)
+        cougarcount = random.randint(1, 4)
+
+        for i in range(squirrelcount):
+            mobs.append(self.enemies.rabidsquirrel())
+        for i in range(wolfcount):
+            mobs.append(self.enemies.wolf())
+        for i in range(cougarcount):
+            mobs.append(self.enemies.cougar())
+
+        objtoreturn = {
+            'name': 'Forest',
             'mobs': mobs,
             'boss': boss
         }
