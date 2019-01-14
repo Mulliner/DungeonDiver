@@ -28,7 +28,10 @@ def start():
     if len(characters) > 0:
         announce(Back.CYAN + 'Character(s) found! Restore?')
         for character in characters:
-            announce(f"{characters.index(character)}) {character['name']}")
+            if character['stats']['scalingstats']['health'] > 0:
+                announce(f"{characters.index(character)}) {character['name']}")
+            else:
+                characters.remove(character)
         
         charrestore = input('>>> ')
         try:
@@ -68,9 +71,9 @@ def start():
 
         announce(f'Ah, a {classtoplay}. What shall we call you?')
         character['name'] = input('>>> ')
-        print(character)
         character['stats']['health'] = math.floor(character['stats']['basestats']['vitality'] * .85)
         character['experience'] = 0
+        character['inventory'] = {'gold': 0}
         character['level'] = 1
         character['type'] = classtoplay.lower()
         save_id = db_cc.insert_one(character).inserted_id
@@ -113,6 +116,7 @@ def write_character_config(character):
 def reset_game():
     charconf = configmanager.readconfig('defaultcharconfig.ini')
     configmanager.writeconfig('charconfig.ini', charconf)
+
 
 def read_character_config(basestats=None):
     c = Character()
@@ -301,10 +305,10 @@ def fight(character, mob, environment=None, mobindex=None):
             announce(Back.BLUE + Fore.GREEN +
                      "{name} used a buff! This will last until your next level up, or ".format(name=character['name']) +
                      "until your stats fall below the buff amount.")
-            if character['abilities'][action.lower()]['stattobuff'] == 'health':
+            if character['stats']['abilities'][action.lower()]['stattobuff'] == 'health':
                 character['stats']['scalingstats']['health'] += int(character['abilities'][action.lower()]['buff'])
                 announce(Back.BLUE + Fore.GREEN + "{name} now has temporary buff of {amount} to your health!"
-                         .format(name=character['name'], amount=int(character['abilities'][action.lower()]['buff'])))
+                         .format(name=character['name'], amount=int(character['stats']['abilities'][action.lower()]['buff'])))
         elif damage == 0:
             announce(Back.YELLOW + "{name} missed!".format(name=character['name']))
         else:
