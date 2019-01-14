@@ -104,7 +104,7 @@ def write_character_config(character):
     for item in character['inventory']:
         charconf['inventory'][item] = str(character['inventory'][item])
 
-    write_character = configmanager.writeconfig('charconfig.ini', charconf)
+    # write_character = configmanager.writeconfig('charconfig.ini', charconf)
 
 
 def reset_game():
@@ -391,6 +391,7 @@ def level(character):
     database_connection.update_character(character['_id'], character)
     for k, v in character['stats'].items():
         announce('\t{stat}: {value}'.format(stat=k, value=v))
+    return character
 
 def heal(character):
     database_connection = DungeonDiverDB()
@@ -412,14 +413,6 @@ def heal(character):
     print_stats(character)
     write_character_config(character)
     return character
-
-
-def heal(character):
-    if character['scalingstats']['health'] < round(character['maxstats']['health'] * .7):
-        healamount = randint(1, 3)
-        character['scalingstats']['health'] += healamount
-        announce(Fore.GREEN + '{name} has been healed for {amount} ({currenthealth})'.format(name=character['name'],
-            amount=healamount, currenthealth=character['scalingstats']['health']))
 
 
 def announce(annoucement):
