@@ -175,11 +175,7 @@ def level(character):
 
     character['experience'] = 0
     character['level'] += 1
-<<<<<<< HEAD
-    character['stats']['health'] = math.floor(character['stats']['vitality'] - .15 * character['stats']['vitality'])
-=======
     character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
->>>>>>> 098dc0a404e2703992616be5da7d483ed626cf58
     announce('Here are your new stats, {name}..\n'.format(name=character['name']))
     for k, v in character['stats'].items():
         announce('\t{stat}: {value}'.format(stat=k, value=v))
@@ -193,7 +189,7 @@ def heal(character):
 
 
 def announce(annoucement):
-    print('\n\t {annoucement}'.format(annoucement=annoucement))
+    print(f'\n\t {annoucement}')
 
 
 if '__main__' in __name__:
