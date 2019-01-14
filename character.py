@@ -1,8 +1,4 @@
 class Character:
-
-    def __init__(self, **kwargs):
-        pass
-
     def mage(self):
         stats = {
             'vitality': 6,

@@ -7,3 +7,7 @@ Leveling up certain stats in a class can unlock subclasses ie. piety on a mage
   will unlock warlock
 
 make a hub world/village
+
+
+# MongoDB
+sudo mongod &

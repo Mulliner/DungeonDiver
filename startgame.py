@@ -7,42 +7,69 @@ from colorama import Fore, Back, Style
 
 from character import Character
 from environments import Environments
+from database import DungeonDiverDB
 
 
 def start():
+    # Init is for colorama, this will set auto-restart to true 
+    # and fix colors after each announcement. 
     init(autoreset=True)
-    c = Character()
-    with open('art/dungeon.txt') as f:
-        print(f.read())
-    print('')
 
-    print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
-    'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
+    database_connection = DungeonDiverDB()
+    db_cc = database_connection.character_collection()
+    charrestored = False
+    # Load previous character?
+    characters = database_connection.restore_character()
+    if len(characters) > 0:
+        announce(Back.CYAN + 'Character(s) found! Restore?')
+        for character in characters:
+            announce(f"{characters.index(character)}) {character['name']}")
+        
+        charrestore = input('>>> ')
+        try:
+            if charrestore and int(charrestore) <= len(characters):
+                announce(f"You've chosen to restore {characters[int(charrestore)]['name']}")
+                charrestored = True
+                character = characters[int(charrestore)]
+        except TypeError:
+            announce("Invalid input, please restart the game or continue with a new character.")
 
-    announce('Mage, Warrior, Fighter, Cleric, Ranger or Paladin?')
-    classtoplay = input('>>> ')
-    character = dict()
-    if classtoplay.lower() == 'mage':
-        character['stats'] = c.mage()
-    elif classtoplay.lower() == 'warrior':
-        character['stats'] = c.warrior()
-    elif classtoplay.lower() == 'fighter':
-        character['stats'] = c.fighter()
-    elif classtoplay.lower() == 'cleric':
-        character['stats'] = c.cleric()
-    elif classtoplay.lower() == 'ranger':
-        character['stats'] = c.ranger()
-    elif classtoplay.lower() == 'paladin':
-        character['stats'] = c.paladin()
-    else:
-        start()
+    if not charrestored:
+        c = Character()
+        with open('art/dungeon.txt') as f:
+            print(f.read())
+        print('')
 
-    announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
-    character['name'] = input('>>> ')
-    character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
-    character['experience'] = 0
-    character['level'] = 1
-    character['type'] = classtoplay.lower()
+        print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
+        'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
+
+        announce('Mage, Warrior, Fighter, Cleric, Ranger or Paladin?')
+        classtoplay = input('>>> ')
+        character = dict()
+        if classtoplay.lower() == 'mage':
+            character['stats'] = c.mage()
+        elif classtoplay.lower() == 'warrior':
+            character['stats'] = c.warrior()
+        elif classtoplay.lower() == 'fighter':
+            character['stats'] = c.fighter()
+        elif classtoplay.lower() == 'cleric':
+            character['stats'] = c.cleric()
+        elif classtoplay.lower() == 'ranger':
+            character['stats'] = c.ranger()
+        elif classtoplay.lower() == 'paladin':
+            character['stats'] = c.paladin()
+        else:
+            start()
+
+        announce('Ah, a {classtoplay}. What shall we call you?'.format(classtoplay=classtoplay))
+        character['name'] = input('>>> ')
+        character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
+        character['experience'] = 0
+        character['level'] = 1
+        character['type'] = classtoplay.lower()
+
+        save_id = db_cc.insert_one(character).inserted_id
+        print(save_id)
 
     announce('Here are your stats, {name}..\n'.format(name=character['name']))
     for k, v in character['stats'].items():
@@ -71,6 +98,7 @@ def start():
 
 
 def fight(character, mob):
+    database_connection = DungeonDiverDB()
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
     if character['type'] == 'mage':
@@ -119,14 +147,19 @@ def fight(character, mob):
                     mobname=mob['name'], mobhealth=mob['health']))
 
         if mob['health'] <= 0:
-            os.system('cls')
+            try:
+                os.system('cls')
+            except:
+                os.system('clear')
             announce('{mobname} has died!\n\n'.format(mobname=mob['name']) + '^' * 80)
             character['experience'] += mobexperiencevalue
             heal(character)
             announce('{name} has gained {earnedexp} experience | '\
                      'Total exp: {exp}'.format(name=character['name'], earnedexp=mobexperiencevalue,
                                                exp=character['experience']))
-
+                                            
+        database_connection.update_character(character['_id'], character)
+            
         if character['experience'] >= character['level'] * 10:
             level(character)
 
@@ -139,6 +172,7 @@ def prompt_fight_action():
 
 
 def level(character):
+    database_connection = DungeonDiverDB()
     announce('!' * 40 + ' LEVEL UP ' + '!' * 40)
     points = 3
     attributes = ['vitality', 'intelligence', 'strength', 'dexterity', 'piety']
@@ -177,13 +211,16 @@ def level(character):
     character['level'] += 1
     character['stats']['health'] = math.floor(character['stats']['vitality'] * .85)
     announce('Here are your new stats, {name}..\n'.format(name=character['name']))
+    database_connection.update_character(character['_id'], character)
     for k, v in character['stats'].items():
         announce('\t{stat}: {value}'.format(stat=k, value=v))
 
 def heal(character):
+    database_connection = DungeonDiverDB()
     if character['stats']['health'] < math.floor(character['stats']['vitality'] * .85) - 3:
         healamount = randint(1, 3)
         character['stats']['health'] += healamount
+        database_connection.update_character(character['_id'], character)
         announce(Fore.GREEN + '{name} has been healed for {amount} ({currenthealth})'.format(name=character['name'],
             amount=healamount, currenthealth=character['stats']['health']))
 
