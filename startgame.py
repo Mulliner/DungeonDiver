@@ -27,6 +27,7 @@ def start():
     characters = database_connection.restore_character()
     if len(characters) > 0:
         announce(Back.CYAN + 'Character(s) found! Restore?')
+        announce('Press enter to start a new character.')
         for character in characters:
             if character['stats']['scalingstats']['health'] > 0:
                 announce(f"{characters.index(character)}) {character['name']}")
@@ -39,6 +40,10 @@ def start():
                 announce(f"You've chosen to restore {characters[int(charrestore)]['name']}")
                 charrestored = True
                 character = characters[int(charrestore)]
+                if 'inventory' not in character:
+                    character['inventory'] = {}
+                    database_connection.update_character(character['_id'], character)
+                    
         except TypeError:
             announce("Invalid input, please restart the game or continue with a new character.")
 
@@ -110,7 +115,7 @@ def write_character_config(character):
     except:
         pass
 
-    # write_character = configmanager.writeconfig('charconfig.ini', charconf)
+    configmanager.writeconfig('charconfig.ini', charconf)
 
 
 def reset_game():
@@ -177,7 +182,10 @@ def enter_hub_world(character):
 
 
 def clear_command_line():
-    os.system('cls')
+    try:
+        os.system('cls')
+    except:
+        os.system('clear')
 
 
 def start_environment(character):
@@ -306,7 +314,7 @@ def fight(character, mob, environment=None, mobindex=None):
                      "{name} used a buff! This will last until your next level up, or ".format(name=character['name']) +
                      "until your stats fall below the buff amount.")
             if character['stats']['abilities'][action.lower()]['stattobuff'] == 'health':
-                character['stats']['scalingstats']['health'] += int(character['abilities'][action.lower()]['buff'])
+                character['stats']['scalingstats']['health'] += int(character['stats']['abilities'][action.lower()]['buff'])
                 announce(Back.BLUE + Fore.GREEN + "{name} now has temporary buff of {amount} to your health!"
                          .format(name=character['name'], amount=int(character['stats']['abilities'][action.lower()]['buff'])))
         elif damage == 0:
@@ -332,6 +340,8 @@ def fight(character, mob, environment=None, mobindex=None):
             goldearned = None
             if chancetogetitems <= character['stats']['basestats']['luck']:
                 goldearned = random.randint(1, random.randint(2, character['stats']['basestats']['luck'] * 10))
+                if not 'gold' in character['inventory']:
+                    character['inventory']['gold'] = 0
                 character['inventory']['gold'] += goldearned
             announce('*' * 50 + '\n')
             announce('{mobname} has died to your {damage} damage!\n\t'.format(mobname=mob['name'], damage=damage))

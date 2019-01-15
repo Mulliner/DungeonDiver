@@ -44,7 +44,15 @@ class Character:
                          'abilitytype': 'buff',
                          'stattobuff': 'health'}
         }
-        return basestats, combatstats, abilities, scalingstats, maxstats
+        c = {
+            'basestats': basestats,
+            'combatstats': combatstats,
+            'abilities': abilities,
+            'scalingstats': scalingstats,
+            'maxstats': maxstats
+        }
+        return c
+
 
     def warrior(self, basestats=None):
         if not basestats:
@@ -74,15 +82,19 @@ class Character:
             'basedamage' : round((basestats['vitality'] + basestats['strength']) * .4)
         }
         abilities = {
-            'overwhelm': {'damage': round(combatstats['basedamage'] * 1.4),
-                          'cost': 3,
-                          'costtype': 'stamina',
-                          'abilitytype': 'damage'},
-            'warcry': {'buff': maxstats['health'] * .8,
-                       'cost': 7,
-                       'costtype': 'stamina',
-                       'abilitytype': 'buff',
-                       'stattobuff': 'health'}
+            'overwhelm': {
+                'damage': round(combatstats['basedamage'] * 1.4),
+                'cost': 3,
+                'costtype': 'stamina',
+                'abilitytype': 'damage'
+                },
+            'warcry': {
+                'buff': maxstats['health'] * .8,
+                'cost': 7,
+                'costtype': 'stamina',
+                'abilitytype': 'buff',
+                'stattobuff': 'health'
+                }
         }
         c = {
             'basestats': basestats,
@@ -126,7 +138,15 @@ class Character:
                           'costtype': 'stamina',
                           'abilitytype': 'damage'},
         }
-        return basestats, combatstats, abilities, scalingstats, maxstats
+        c = {
+            'basestats': basestats,
+            'combatstats': combatstats,
+            'abilities': abilities,
+            'scalingstats': scalingstats,
+            'maxstats': maxstats
+        }
+        return c
+
     
     def ranger(self, basestats=None):
         if not basestats:
@@ -161,7 +181,15 @@ class Character:
                             'costtype': 'stamina',
                             'abilitytype': 'damage'},
         }
-        return basestats, combatstats, abilities, scalingstats, maxstats
+        c = {
+            'basestats': basestats,
+            'combatstats': combatstats,
+            'abilities': abilities,
+            'scalingstats': scalingstats,
+            'maxstats': maxstats
+        }
+        return c
+
 
     def paladin(self, basestats=None):
         if not basestats:
@@ -196,7 +224,15 @@ class Character:
                       'costtype': 'mana',
                       'abilitytype': 'damage'},
         }
-        return basestats, combatstats, abilities, scalingstats, maxstats
+        c = {
+            'basestats': basestats,
+            'combatstats': combatstats,
+            'abilities': abilities,
+            'scalingstats': scalingstats,
+            'maxstats': maxstats
+        }
+        return c
+
 
     def cleric(self, basestats=None):
         if not basestats:
@@ -231,4 +267,12 @@ class Character:
                      'costtype': 'mana',
                      'abilitytype': 'damage'},
         }
-        return basestats, combatstats, abilities, scalingstats, maxstats
+        c = {
+            'basestats': basestats,
+            'combatstats': combatstats,
+            'abilities': abilities,
+            'scalingstats': scalingstats,
+            'maxstats': maxstats
+        }
+        return c
+
