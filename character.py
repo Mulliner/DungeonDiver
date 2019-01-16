@@ -21,14 +21,14 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         scalingstats = {
             'health': math.floor(basestats['vitality'] * .90),
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
             'basedamage' : round(basestats['intelligence'] * 1.4)
@@ -52,7 +52,6 @@ class Character:
             'maxstats': maxstats
         }
         return c
-
 
     def warrior(self, basestats=None):
         if not basestats:
@@ -216,7 +215,7 @@ class Character:
             'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
         }
         combatstats = {
-            'basedamage' : round((basestats['vitality'] + basestats['piety']) * .35)
+            'basedamage': round((basestats['vitality'] + basestats['piety']) * .35)
         }
         abilities = {
             'smite': {'damage': round(combatstats['basedamage'] * 1.8),

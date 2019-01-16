@@ -29,6 +29,11 @@ class DungeonDiverDB:
         for char in cursor:
             characters.append(char)
         return characters
+
+    def remove_character(self, character):
+        collection = self.db.get_collection('Character')
+        remove = collection.delete_one(character)
+        return remove
     
     def update_character(self, mongo_id, character):
         collection = self.db.get_collection('Character')
