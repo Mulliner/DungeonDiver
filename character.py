@@ -31,7 +31,7 @@ class Character:
             'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
-            'basedamage' : round(basestats['intelligence'] * 1.4)
+            'basedamage': round(basestats['intelligence'] * 1.4)
         }
         abilities = {
             'fireball': {'damage': round(combatstats['basedamage'] * 2),
@@ -75,7 +75,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
             'basedamage' : round((basestats['vitality'] + basestats['strength']) * .4)
@@ -126,7 +126,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
             'basedamage' : round(basestats['strength'] * 1.3)
@@ -145,7 +145,6 @@ class Character:
             'maxstats': maxstats
         }
         return c
-
     
     def ranger(self, basestats=None):
         if not basestats:
@@ -169,7 +168,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
             'basedamage' : round(basestats['dexterity'] * 1.2)
@@ -189,7 +188,6 @@ class Character:
         }
         return c
 
-
     def paladin(self, basestats=None):
         if not basestats:
             basestats = {
@@ -205,14 +203,14 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         scalingstats = {
             'health': math.floor(basestats['vitality'] * .90),
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
             'basedamage': round((basestats['vitality'] + basestats['piety']) * .35)
@@ -255,7 +253,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
             'basedamage' : round(basestats['piety'] * .9)
