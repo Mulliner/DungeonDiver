@@ -56,11 +56,11 @@ class Character:
     def warrior(self, basestats=None):
         if not basestats:
             basestats = {
-                'vitality' : 10,
-                'strength' : 8,
-                'dexterity' : 4,
-                'intelligence' : 1,
-                'piety' : 2,
+                'vitality': 10,
+                'strength': 8,
+                'dexterity': 4,
+                'intelligence': 1,
+                'piety': 2,
                 'luck': 5
             }
         maxstats = {
@@ -68,7 +68,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         scalingstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -78,7 +78,7 @@ class Character:
             'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
-            'basedamage' : round((basestats['vitality'] + basestats['strength']) * .4)
+            'basedamage': round((basestats['vitality'] + basestats['strength']) * .4)
         }
         abilities = {
             'overwhelm': {
@@ -119,7 +119,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         scalingstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -129,7 +129,7 @@ class Character:
             'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
-            'basedamage' : round(basestats['strength'] * 1.3)
+            'basedamage': round(basestats['strength'] * 1.3)
         }
         abilities = {
             'brutalize': {'damage': round(combatstats['basedamage'] * 1.8),
@@ -149,11 +149,11 @@ class Character:
     def ranger(self, basestats=None):
         if not basestats:
             basestats = {
-                'vitality' : 6,
-                'strength' : 5,
-                'dexterity' : 10,
-                'intelligence' : 3,
-                'piety' : 1,
+                'vitality': 6,
+                'strength': 5,
+                'dexterity': 10,
+                'intelligence': 3,
+                'piety': 1,
                 'luck': 5
             }
         maxstats = {
@@ -161,7 +161,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         scalingstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -171,7 +171,7 @@ class Character:
             'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
-            'basedamage' : round(basestats['dexterity'] * 1.2)
+            'basedamage': round(basestats['dexterity'] * 1.2)
         }
         abilities = {
             'assassinate': {'damage': round(combatstats['basedamage'] * 2.4),
@@ -230,7 +230,6 @@ class Character:
         }
         return c
 
-
     def cleric(self, basestats=None):
         if not basestats:
             basestats = {
@@ -246,7 +245,7 @@ class Character:
             'stamina': round(basestats['vitality'] / 3) +
                        round(basestats['strength'] / 3) +
                        round(basestats['dexterity'] / 3),
-            'mana': round((basestats['intelligence'] +  basestats['piety']) * .90),
+            'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         scalingstats = {
             'health': math.floor(basestats['vitality'] * .90),
@@ -256,7 +255,7 @@ class Character:
             'mana': round((basestats['intelligence'] + basestats['piety']) * .90),
         }
         combatstats = {
-            'basedamage' : round(basestats['piety'] * .9)
+            'basedamage': round(basestats['piety'] * .9)
         }
         abilities = {
             'holy': {'damage': round(combatstats['basedamage'] * 3),

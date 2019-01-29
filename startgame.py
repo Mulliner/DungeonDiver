@@ -3,6 +3,7 @@ import random
 import os
 import sys
 import json
+import platform
 import copy
 from random import shuffle
 from random import randint
@@ -37,9 +38,10 @@ def start():
             else:
                 characters.remove(character)
         
-        charrestore = input('>>> ')
+        charrestore = input('> ')
         try:
             if charrestore and int(charrestore) <= len(characters):
+                clear_console()
                 announce(f"You've chosen to restore {characters[int(charrestore)]['name']}")
                 charrestored = True
                 character = characters[int(charrestore)]
@@ -60,7 +62,7 @@ def start():
         'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
 
         announce('Mage, Warrior, Fighter, Cleric, Ranger or Paladin?')
-        classtoplay = input('>>> ')
+        classtoplay = input('> ')
         character = dict()
         if classtoplay.lower() == 'mage':
             character['character'] = c.mage()
@@ -78,7 +80,7 @@ def start():
             start()
 
         announce(f'Ah, a {classtoplay}. What shall we call you?')
-        character['name'] = input('>>> ')
+        character['name'] = input('> ')
         character['character']['health'] = math.floor(character['character']['basestats']['vitality'] * .85)
         character['experience'] = 0
         character['inventory'] = {'gold': 0}
@@ -97,7 +99,7 @@ def calcmaxstats(stats):
         'stamina': round(stats['vitality'] / 3) +
                    round(stats['strength'] / 3) +
                    round(stats['dexterity'] / 3),
-        'mana': round((stats['intelligence'] +  stats['piety']) * .90),
+        'mana': round((stats['intelligence'] + stats['piety']) * .90),
     }
     return maxstats
 
@@ -165,20 +167,20 @@ def read_character_config(basestats=None):
 def enter_hub_world(character):
     announce("You're now in the hub. What would you like to do?")
     announce('Start a Dungeon (d) | Check your Stats (s) | Check your Inventory (i)')
-    action = input('>>> ')
+    action = input('> ')
     if action == 'd':
-        clear_command_line()
+        clear_console()
         start_environment(character)
     elif action == 's':
-        clear_command_line()
+        clear_console()
         print_stats(character)
     elif action == 'i':
-        clear_command_line()
+        clear_console()
         print_inventory(character)
     elif action.lower() == 'cls':
-        clear_command_line()
+        clear_console()
     elif action.lower() == 'q':
-        clear_command_line()
+        clear_console()
         # write_character_config(character)
         announce('Character Saved!')
         sys.exit()
@@ -186,14 +188,9 @@ def enter_hub_world(character):
     enter_hub_world(character)
 
 
-def clear_command_line():
-    try:
-        os.system('cls')
-    except:
-        os.system('clear')
-
-
 def start_environment(character):
+    clear_console()
+    database_connection = DungeonDiverDB()
     env = Environments(level=character['level'])
     possible_environments = [func for func in dir(env) if callable(getattr(env, func)) and '_' not in func]
     chosenenv = random.choice(possible_environments)
@@ -210,9 +207,55 @@ def start_environment(character):
                                                                               enemycount=len(environment['mobs'])))
 
     shuffle(environment['mobs'])
-    for mob in environment['mobs']:
-        announce('Uh-oh! {mobname} attacks!\n\n'.format(mobname=mob['name']))
-        character = fight(character, mob, environment, environment['mobs'].index(mob))
+
+    while len(environment['mobs']) > 0:
+        announce("Which direction would you like to go? North, South, East, West.")
+        allowed_actions = ['north', 'south', 'east', 'west', 'q', 'h', 's', 'i']
+        action = None
+        while not action or action not in allowed_actions:
+            action = input('> ').lower()
+        clear_console()
+        if action == 'q':
+            sys.exit()
+        elif action == 'h':
+            clear_console()
+            announce('Heading back to the hub..')
+            enter_hub_world(character)
+            break
+        elif action == 's':
+            clear_console()
+            print_stats(character)
+        elif action == 'i':
+            clear_console()
+            print_inventory(character)
+        chance_for_encounter = random.randint(1, 100)
+        if chance_for_encounter > 51:
+            mob = environment['mobs'][random.randint(0, len(environment['mobs']) - 1)]
+            announce('Uh-oh! {mobname} attacks!\n\n'.format(mobname=mob['name']))
+            character = fight(character, mob, environment, environment['mobs'].index(mob))
+        elif chance_for_encounter <= 50 and chance_for_encounter >= 9:
+            announce('Hmm, nothing found in this area..')
+        elif chance_for_encounter <= 9:
+            announce('You\'ve stumbled across a room with a treasure chest. '
+                     'Though.. its bloody.. open it? Yes, No.')
+            treasure_actions = ['yes', 'no']
+            looting_treasure = True
+            while looting_treasure:
+                treasure_action = input('> ').lower()
+                if treasure_action in treasure_actions:
+                    clear_console()
+                    if treasure_action == 'yes':
+                        gold_chance = random.randint(1, 100)
+                        if gold_chance > 61:
+                            gold_amount = random.randint(1, 100)
+                            character['inventory']['gold'] += gold_amount
+                            announce(f'You\'ve managed to scrounge up {gold_amount} gold from the chest!')
+                            database_connection.update_character(character['_id'], character)
+                        else:
+                            announce('Fuck, nothing found in this one..')
+                    else:
+                        announce('Eh, I thought about bumping lines once.. then thought.. eh, betta not.')
+                looting_treasure = False
 
     announce("\nYou've cleared out all of the enemies, now its time for the boss!")
     if environment['boss']['name'] == 'Ogre':
@@ -271,7 +314,6 @@ def fight(character, mob, environment=None, mobindex=None):
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
     damagestat = character['character']['combatstats']['basedamage']
-    print(character['character'])
     abilities = [k for (k, v) in character['character']['abilities'].items()]
     abilities.append('basic')
 
@@ -287,18 +329,18 @@ def fight(character, mob, environment=None, mobindex=None):
         if action.lower() == 'basic':
             damage = randint(0, int(damagestat / 2))
         elif action.lower() == 'cls':
-            clear_command_line()
+            clear_console()
             fight(character, mob, environment=environment, mobindex=mobindex)
             break
         elif action.lower() == 'h':
-            clear_command_line()
+            clear_console()
             announce('Heading back to the hub..')
-            # write_character_config(character)
             enter_hub_world(character)
             break
         elif action.lower() == 'q':
-            clear_command_line()
+            clear_console()
             # write_character_config(character)
+            database_connection.update_character(character['_id'], character)
             announce('Saving Character, then exiting!')
             sys.exit()
         elif action.lower() in abilities:
@@ -320,7 +362,8 @@ def fight(character, mob, environment=None, mobindex=None):
 
         if damage > 0:
             announce(Fore.YELLOW + "{name} attacks {mobname} for {damage} damage!".format(mobname=mob['name'],
-                name=character['name'], damage=damage))
+                                                                                          name=character['name'],
+                                                                                          damage=damage))
             mob['health'] -= damage
         elif damage == -1:
             announce(Back.BLUE + Fore.GREEN +
@@ -338,28 +381,26 @@ def fight(character, mob, environment=None, mobindex=None):
         mobdamage = randint(0, mob['damage'])
         if mobdamage != 0:
             announce(Fore.RED + '{mobname} attacks {name} for {damage} damage!'.format(mobname=mob['name'],
-                name=character['name'], damage=mobdamage))
+                                                                                       name=character['name'],
+                                                                                       damage=mobdamage))
             character['character']['scalingstats']['health'] -= mobdamage
         else:
             announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
 
         if mob['health'] <= 0:
-            try:
-                os.system('cls')
-            except:
-                os.system('clear')
             announce('{mobname} has died!\n\n'.format(mobname=mob['name']) + '^' * 80)
             chancetogetitems = random.randint(1, 100)
             goldearned = None
             if chancetogetitems <= character['character']['basestats']['luck']:
                 goldearned = random.randint(1, random.randint(2, character['character']['basestats']['luck'] * 10))
-                if not 'gold' in character['inventory']:
+                if 'gold' not in character['inventory']:
                     character['inventory']['gold'] = 0
                 character['inventory']['gold'] += goldearned
             announce('*' * 50 + '\n')
             announce('{mobname} has died to your {damage} damage!\n\t'.format(mobname=mob['name'], damage=damage))
             if goldearned:
-                announce(Back.YELLOW + Fore.GREEN + '{mobname} has dropped {gold} gold.'.format(mobname=mob['name'], gold=str(goldearned)))
+                announce(Back.YELLOW + Fore.GREEN + '{mobname} has dropped {gold} gold.'.format(mobname=mob['name'],
+                                                                                                gold=str(goldearned)))
             announce('*' * 50)
             character['experience'] += mobexperiencevalue
             heal(character)
@@ -370,7 +411,7 @@ def fight(character, mob, environment=None, mobindex=None):
         database_connection.update_character(character['_id'], character)
             
         if character['character']['scalingstats']['health'] <= 0:
-            os.system('cls')
+            clear_console()
             reset_game()
             announce('\tGame Over!\n\n\n')
             start()
@@ -378,12 +419,22 @@ def fight(character, mob, environment=None, mobindex=None):
         if character['experience'] >= character['level'] * 10:
             character = level(character)
 
-        # write_character_config(character)
     return character
 
 
+def clear_console():
+    """
+    Detects OS so it can properly clear the console.
+    :return:
+    """
+    if platform.platform() is 'Windows':
+        os.system('cls')
+    else:
+        os.system('clear')
+
+
 def prompt_fight_action():
-    return input('>>> ')
+    return input('> ')
 
 
 def level(character):
@@ -393,11 +444,11 @@ def level(character):
     attributes = [k for (k, v) in character['character']['basestats'].items()]
 
     while points > 0:
-        clear_command_line()
+        clear_console()
         announce('You have {points} points to spend!'.format(points=points))
         announce('Where would you like them to go? Enter in format "Amount:Attribute"')
         print_stats(character)
-        wheretospend = input('>>> ').split(':')
+        wheretospend = input('> ').split(':')
         try:
             if int(wheretospend[0]) > points or int(wheretospend[0]) <= 0:
                 continue
@@ -437,10 +488,10 @@ def heal(character):
     character['character']['scalingstats']['health'] = character['maxstats']['health']
     # Reset stamina
     character['character']['scalingstats']['stamina'] = character['maxstats']['stamina']
-    #Reset mana
+    # Reset mana
     character['character']['scalingstats']['mana'] = character['maxstats']['mana']
 
-    os.system('cls')
+    clear_console()
     print_stats(character)
     # write_character_config(character)
     return character
