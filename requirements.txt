@@ -1,0 +1,2 @@
+colorama==0.4.1
+pymongo==3.7.2
