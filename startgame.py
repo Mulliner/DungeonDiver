@@ -12,7 +12,6 @@ from colorama import init
 from colorama import Fore, Back, Style
 
 
-import configmanager
 from character import Character
 from environments import Environments
 from database import DungeonDiverDB
@@ -29,16 +28,22 @@ def start():
     # Load previous character?
     characters = database_connection.restore_character()
     if len(characters) > 0:
-        announce(Back.CYAN + 'Character(s) found! Restore?')
-        announce('Press enter to start a new character.')
         for character in characters:
-            # database_connection.remove_character(character)
-            if character['character']['scalingstats']['health'] > 0:
-                announce(f"{characters.index(character)}) {character['name']}")
-            else:
+            # This loop determines if any characters have died. If so.. remove them.
+            if character['character']['scalingstats']['health'] <= 0:
+                database_connection.remove_character(character)
                 characters.remove(character)
-        
+
+        if len(characters) > 0:
+            announce(Back.CYAN + 'Character(s) found! Restore?')
+            for character in characters:
+                announce(f"{characters.index(character)}) {character['name']}")
+
+        announce('Press enter to start a new character.')
+
         charrestore = input('> ')
+        if charrestore == 'q':
+            sys.exit()
         try:
             if charrestore and int(charrestore) <= len(characters):
                 clear_console()
@@ -58,8 +63,10 @@ def start():
             print(f.read())
         print('')
 
-        print('#' * 80 + '\n#' + ' ' * 78 + '#' + '\n#\tWelcome to Command-Line Dungeon Diver! '\
-        'Begin by selecting a class:     #\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
+        intro_message = 'Welcome to Command-Line Dungeon Diver! Begin by selecting a class:'
+        intro_message += ' ' * 5
+
+        print('#' * 80 + '\n#' + ' ' * 78 + '#' + f'\n#\t{intro_message}#\n' + '#' + ' ' * 78 + '#' + '\n' + '#' * 80)
 
         announce('Mage, Warrior, Fighter, Cleric, Ranger or Paladin?')
         classtoplay = input('> ')
@@ -88,7 +95,6 @@ def start():
         character['type'] = classtoplay.lower()
         save_id = db_cc.insert_one(character).inserted_id
         print_stats(character)
-        # write_character_config(character)
 
     enter_hub_world(character)
 
@@ -104,69 +110,18 @@ def calcmaxstats(stats):
     return maxstats
 
 
-# def write_character_config(character):
-#     charconf = configmanager.readconfig('charconfig.ini')
-#     charconf['character']['name'] = str(character['character']['name'])
-#     charconf['character']['experience'] = str(character['character']['experience'])
-#     charconf['character']['level'] = str(character['character']['level'])
-#     charconf['character']['type'] = str(character['character']['type'])
-#     for stat in character['character']:
-#         charconf['stats'][stat] = str(character['character'][stat])
-#     for stat in character['character']['scalingstats']:
-#         charconf['scalingstats'][stat] = str(character['character']['scalingstats'][stat])
-#     for stat in character['character']['combatstats']:
-#         charconf['combatstats'][stat] = str(character['character']['combatstats'][stat])
-#     try:
-#         for item in character['inventory']:
-#             charconf['inventory'][item] = str(character['inventory'][item])
-#     except:
-#         pass
-#
-#     configmanager.writeconfig('charconfig.ini', charconf)
-
-
-def reset_game():
-    charconf = configmanager.readconfig('defaultcharconfig.ini')
-    configmanager.writeconfig('charconfig.ini', charconf)
-
-
-def read_character_config(basestats=None):
-    c = Character()
-    charconf = configmanager.readconfig('charconfig.ini')
-    character = dict()
-    character['name'] = charconf['character']['name']
-    if character['name'] == 'Default':
-        return character
-
-    character['type'] = charconf['character']['type']
-    if basestats:
-        characterobj = getattr(c, character['type'])(basestats=basestats)
-    else:
-        characterobj = getattr(c, character['type'])()
-    character['abilities'] = characterobj[2]
-    character['level'] = int(charconf['character']['level'])
-    character['experience'] = int(charconf['character']['experience'])
-    character['character'] = dict()
-    character['scalingstats'] = dict()
-    character['maxstats'] = dict()
-    character['combatstats'] = dict()
-    character['inventory'] = dict()
-
-    for key in charconf['stats']:
-        character['character'][key] = int(charconf['stats'][key])
-    for key in charconf['scalingstats']:
-        character['character']['scalingstats'][key] = int(charconf['scalingstats'][key])
-        character['character']['maxstats'][key] = int(charconf['scalingstats'][key])
-    for key in charconf['combatstats']:
-        character['character']['combatstats'][key] = int(charconf['combatstats'][key])
-    for key in charconf['inventory']:
-        character['character']['inventory'][key] = int(charconf['inventory'][key])
-    return character
-
-
 def enter_hub_world(character):
+    valid_commands = {
+        'd': 'Start a Dungeon',
+        's': 'Check your Stats',
+        'i': 'Check your Inventory',
+        'e': 'Check your Equipment',
+        'q': 'Save and Exit',
+        'cls': 'Clear the Screen'
+    }
     announce("You're now in the hub. What would you like to do?")
-    announce('Start a Dungeon (d) | Check your Stats (s) | Check your Inventory (i)')
+    for k, v in valid_commands.items():
+        announce(f'\t{v} ({k})')
     action = input('> ')
     if action == 'd':
         clear_console()
@@ -177,11 +132,13 @@ def enter_hub_world(character):
     elif action == 'i':
         clear_console()
         print_inventory(character)
+    elif action == 'e':
+        clear_console()
+        print_equipment(character)
     elif action.lower() == 'cls':
         clear_console()
     elif action.lower() == 'q':
         clear_console()
-        # write_character_config(character)
         announce('Character Saved!')
         sys.exit()
 
@@ -293,6 +250,13 @@ def print_inventory(character):
     announce('-' * 50)
 
 
+def print_equipment(character):
+    announce(f"Here is your equipment, {character['name']}..\n")
+    for k, v in character['character']['equipment'].items():
+        announce(f'\t{k}: {v}')
+    announce('-' * 50)
+
+
 def fight(character, mob, environment=None, mobindex=None):
     database_connection = DungeonDiverDB()
     if mob['name'] == 'Bat':
@@ -318,10 +282,10 @@ def fight(character, mob, environment=None, mobindex=None):
     abilities.append('basic')
 
     while mob['health'] > 0:
-        announce('You have health: {charhealth}, mana: {charmana}, stamina: {charstamina}. | {mobname} has {mobhealth}'\
-                 ' health.'
-                 .format(charhealth=character['character']['scalingstats']['health'], charmana=character['character']['scalingstats']['mana'],
-                         charstamina=character['character']['scalingstats']['stamina'], mobname=mob['name'], mobhealth=mob['health']))
+        announce(f"You have health: {character['character']['scalingstats']['health']}, "
+                 f"mana: {character['character']['scalingstats']['mana']}, "
+                 f"stamina: {character['character']['scalingstats']['stamina']}. "
+                 f"| {mob['name']} has {mob['health']} health.")
 
         announce('\nWhat action will you do? ({abilities})'.format(abilities=abilities))
         action = prompt_fight_action()
@@ -339,7 +303,6 @@ def fight(character, mob, environment=None, mobindex=None):
             break
         elif action.lower() == 'q':
             clear_console()
-            # write_character_config(character)
             database_connection.update_character(character['_id'], character)
             announce('Saving Character, then exiting!')
             sys.exit()
@@ -353,8 +316,7 @@ def fight(character, mob, environment=None, mobindex=None):
                     damage = -1
                 character['character']['scalingstats'][costtype] -= character['character']['abilities'][action.lower()]['cost']
             else:
-                announce('Not enough {costtype} to use {ability}. Performing basic attack.'
-                         .format(costtype=costtype, ability=action.lower()))
+                announce(f'Not enough {costtype} to use {action.lower()}. Performing basic attack.')
                 damage = randint(0, int(damagestat / 2))
         else:
             announce(Back.CYAN + 'Action not available')
@@ -412,7 +374,6 @@ def fight(character, mob, environment=None, mobindex=None):
             
         if character['character']['scalingstats']['health'] <= 0:
             clear_console()
-            reset_game()
             announce('\tGame Over!\n\n\n')
             start()
 
@@ -493,7 +454,6 @@ def heal(character):
 
     clear_console()
     print_stats(character)
-    # write_character_config(character)
     return character
 
 
