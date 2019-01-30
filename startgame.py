@@ -21,7 +21,7 @@ def start():
     # Init is for colorama, this will set auto-restart to true 
     # and fix colors after each announcement. 
     init(autoreset=True)
-
+    character = None
     database_connection = DungeonDiverDB()
     db_cc = database_connection.character_collection()
     charrestored = False
@@ -93,10 +93,10 @@ def start():
         character['inventory'] = {'gold': 0}
         character['level'] = 1
         character['type'] = classtoplay.lower()
-        save_id = db_cc.insert_one(character).inserted_id
+        db_cc.insert_one(character).inserted_id
         print_stats(character)
-
-    enter_hub_world(character)
+    if character:
+        enter_hub_world(character)
 
 
 def calcmaxstats(stats):
@@ -120,6 +120,49 @@ def enter_hub_world(character):
         'cls': 'Clear the Screen'
     }
     announce("You're now in the hub. What would you like to do?")
+
+    if 'equipment' not in character['character'] or character['character']['equipment']['primary_hand'] == None:
+        announce('A mysterious figure appears..')
+        announce(f"I noticed you\'re unarmed {character['name']}..")
+        announce('Take this, this world is ruthless.')
+        highest_stat = dict()
+        temp_stat_name = None
+        temp_stat = 0
+        for k, v in character['character']['basestats'].items():
+            if v > temp_stat:
+                temp_stat = v
+                temp_stat_name = k
+        highest_stat['type'] = temp_stat_name
+        highest_stat['value'] = temp_stat
+        possible_weapon_types = {
+            'generic': [
+                'Staff',
+                'Sword',
+                'Scepter'
+            ],
+            'intelligence': [
+                'Staff',
+                'Wand'
+            ]
+        }
+        possible_weapon_value_types = [
+            'strength',
+            'vitality',
+            'intelligence'
+        ]
+        possible_weapon_values = {
+            random.choice(possible_weapon_value_types): random.randint(2, 10)
+        }
+        if highest_stat['type'].lower() in possible_weapon_types:
+            weapon_type = random.choice(possible_weapon_types[highest_stat['type'].lower()])
+
+        weapon = {
+            'item_type': 'weapon',
+            'weapon_type': weapon_type,
+            'weapon_stats': possible_weapon_values
+        }
+        equip_item(character, weapon, 'primary_hand')
+
     for k, v in valid_commands.items():
         announce(f'\t{v} ({k})')
     action = input('> ')
@@ -166,7 +209,7 @@ def start_environment(character):
     shuffle(environment['mobs'])
 
     while len(environment['mobs']) > 0:
-        announce("Which direction would you like to go? North, South, East, West.")
+        announce(Fore.LIGHTBLUE_EX + "Which direction would you like to go? North, South, East, West.")
         allowed_actions = ['north', 'south', 'east', 'west', 'q', 'h', 's', 'i']
         action = None
         while not action or action not in allowed_actions:
@@ -217,14 +260,25 @@ def start_environment(character):
     announce("\nYou've cleared out all of the enemies, now its time for the boss!")
     if environment['boss']['name'] == 'Ogre':
         with open('art/ogre.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.RED + f.read())
     elif environment['boss']['name'] == 'Alpha Wolf':
         with open('art/alphawolf.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.RED + f.read())
 
     character = fight(character, environment['boss'])
     if character:
         enter_hub_world(character)
+
+
+def equip_item(character, item, item_slot):
+    database_connection = DungeonDiverDB()
+    if 'equipment' not in character['character']:
+        character['character']['equipment'] = dict()
+    character['character']['equipment'][item_slot] = item
+    if item['item_type'] == 'weapon':
+        for k, v in item['weapon_stats'].items():
+            character['character']['basestats'][k] += int(v)
+    database_connection.update_character(character['_id'], character)
 
 
 def print_stats(character):
@@ -261,19 +315,19 @@ def fight(character, mob, environment=None, mobindex=None):
     database_connection = DungeonDiverDB()
     if mob['name'] == 'Bat':
         with open('art/bat.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.LIGHTRED_EX + f.read())
     elif mob['name'] == 'Skeleton':
         with open('art/skeleton.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.LIGHTRED_EX + f.read())
     elif mob['name'] == 'Wolf':
         with open('art/wolf.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.LIGHTRED_EX + f.read())
     elif mob['name'] == 'Rabid Squirrel':
         with open('art/squirrel.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.LIGHTRED_EX + f.read())
     elif mob['name'] == 'Cougar':
         with open('art/cougar.txt', mode='r') as f:
-            print(f.read())
+            print(Fore.LIGHTRED_EX + f.read())
 
     higheststatvalue = 0
     mobexperiencevalue = mob['health']
@@ -319,7 +373,7 @@ def fight(character, mob, environment=None, mobindex=None):
                 announce(f'Not enough {costtype} to use {action.lower()}. Performing basic attack.')
                 damage = randint(0, int(damagestat / 2))
         else:
-            announce(Back.CYAN + 'Action not available')
+            announce(Back.CYAN + Fore.YELLOW + 'Action not available')
             damage = 0
 
         if damage > 0:
@@ -333,10 +387,10 @@ def fight(character, mob, environment=None, mobindex=None):
                      "until your stats fall below the buff amount.")
             if character['character']['abilities'][action.lower()]['stattobuff'] == 'health':
                 character['character']['scalingstats']['health'] += int(character['character']['abilities'][action.lower()]['buff'])
-                announce(Back.BLUE + Fore.GREEN + "{name} now has temporary buff of {amount} to your health!"
+                announce(Back.WHITE + Fore.GREEN + "{name} now has temporary buff of {amount} to your health!"
                          .format(name=character['name'], amount=int(character['character']['abilities'][action.lower()]['buff'])))
         elif damage == 0:
-            announce(Back.YELLOW + "{name} missed!".format(name=character['name']))
+            announce(Back.YELLOW + Fore.BLACK + "{name} missed!".format(name=character['name']))
         else:
             pass
 
@@ -347,7 +401,7 @@ def fight(character, mob, environment=None, mobindex=None):
                                                                                        damage=mobdamage))
             character['character']['scalingstats']['health'] -= mobdamage
         else:
-            announce(Back.YELLOW + '{mobname} missed!'.format(mobname=mob['name']))
+            announce(Back.YELLOW + Fore.RED + '{mobname} missed!'.format(mobname=mob['name']))
 
         if mob['health'] <= 0:
             announce('{mobname} has died!\n\n'.format(mobname=mob['name']) + '^' * 80)
@@ -361,7 +415,7 @@ def fight(character, mob, environment=None, mobindex=None):
             announce('*' * 50 + '\n')
             announce('{mobname} has died to your {damage} damage!\n\t'.format(mobname=mob['name'], damage=damage))
             if goldearned:
-                announce(Back.YELLOW + Fore.GREEN + '{mobname} has dropped {gold} gold.'.format(mobname=mob['name'],
+                announce(Back.YELLOW + Fore.BLACK + '{mobname} has dropped {gold} gold.'.format(mobname=mob['name'],
                                                                                                 gold=str(goldearned)))
             announce('*' * 50)
             character['experience'] += mobexperiencevalue
